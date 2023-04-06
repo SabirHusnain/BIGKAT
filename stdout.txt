@@ -1,0 +1,8 @@
+The basepath is F:\BS Mechatronics\FYP_OMCS\My Code\PSAT
+False
+F:\BS Mechatronics\FYP_OMCS\My Code\PSAT
+F:\BS Mechatronics\FYP_OMCS\My Code\PSAT
+No module named 'PySide'
+Looking for PyQT
+Loading video file: F:/BS Mechatronics/FYP_OMCS/My Code/PSAT\recorded_data\Large_30\Record_0\videos\testIR_server.h264
+Video Loading: Video Loaded from file: F:/BS Mechatronics/FYP_OMCS/My Code/PSAT\recorded_data\Large_30\Record_0\videos\testIR_server.h264

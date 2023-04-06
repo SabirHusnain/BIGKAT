@@ -1,0 +1,7 @@
+/calibration/*/*/*.tiff
+/calibration/*/*/*/*.tiff
+/calibration/*/*/*/*.png
+markers
+*.h264
+.spyproject
+__pycache__

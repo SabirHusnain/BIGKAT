@@ -1,0 +1,9 @@
+Process Process-2:
+Traceback (most recent call last):
+  File "C:\Users\sabir\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 314, in _bootstrap
+    self.run()
+  File "C:\Users\sabir\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "F:\BS Mechatronics\FYP_OMCS\My Code\PSAT\posturalCam_master_NETWORK.py", line 1790, in get_ir_markers
+    ir = ir_marker.find_ir_markers(frame, n_markers=3, it=i, tval=150, last_markers=last_markers,
+TypeError: find_ir_markers() got an unexpected keyword argument 'last_markers'
