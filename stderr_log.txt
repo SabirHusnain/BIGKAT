@@ -1,9 +1,12 @@
-Process Process-2:
-Traceback (most recent call last):
-  File "C:\Users\sabir\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 314, in _bootstrap
-    self.run()
-  File "C:\Users\sabir\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
-    self._target(*self._args, **self._kwargs)
-  File "F:\BS Mechatronics\FYP_OMCS\My Code\PSAT\posturalCam_master_NETWORK.py", line 1790, in get_ir_markers
-    ir = ir_marker.find_ir_markers(frame, n_markers=3, it=i, tval=150, last_markers=last_markers,
-TypeError: find_ir_markers() got an unexpected keyword argument 'last_markers'
+F:\BS Mechatronics\FYP_OMCS\My Code\PSAT\PSAT.py:1237: FutureWarning: The squeeze argument has been deprecated and will be removed in a future version. Append .squeeze("columns") to the call to squeeze.
+
+
+  cond_name = pd.read_csv(os.path.join(
+F:\BS Mechatronics\FYP_OMCS\My Code\PSAT\PSAT.py:1237: FutureWarning: The squeeze argument has been deprecated and will be removed in a future version. Append .squeeze("columns") to the call to squeeze.
+
+
+  cond_name = pd.read_csv(os.path.join(
+F:\BS Mechatronics\FYP_OMCS\My Code\PSAT\PSAT.py:1490: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  master_dataFrame = master_dataFrame.append(
+F:\BS Mechatronics\FYP_OMCS\My Code\PSAT\PSAT.py:1490: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  master_dataFrame = master_dataFrame.append(

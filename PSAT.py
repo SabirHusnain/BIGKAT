@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-"""
-Postural Sway Assesment Tool GUI.
 
+"""
+Author: Sabir Husnain
+Date: May 8, 2023
+Description: BIGKAT - GUI
 """
 
 import subprocess  # Imports from standard library
