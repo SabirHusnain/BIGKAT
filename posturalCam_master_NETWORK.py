@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-@author: Awais
+Author: Sabir Husnain
+Date: May 8, 2023
+Description: Backend for BIGKAT
 """
 
 import sys

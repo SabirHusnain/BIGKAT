@@ -580,8 +580,8 @@ class virtualKeyboard(QtWidgets.QDialog):
                                ['CAP', ',', '.', '', '', '', '', '', '<-', ''],
                                ['', 'Spacebar', '']]
 
-        CAP_f = os.path.join(base_path, 'misc_files', 'shift_key.png')
-        alt_f = os.path.join(base_path, 'misc_files', 'alt_keys.png')
+        CAP_f = os.path.join(base_path, 'artwork', 'shift_key.png')
+        alt_f = os.path.join(base_path, 'artwork', 'alt_keys.png')
 
         self.buttons = [[{'lower': '1', 'upper': '1', 'alt': '1', 'type': 'text'},
                          {'lower': '2', 'upper': '2', 'alt': '2', 'type': 'text'},

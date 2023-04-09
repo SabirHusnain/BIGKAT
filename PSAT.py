@@ -80,8 +80,8 @@ def vector_magnitude(v):
 
 def load_demo_images():
     """For demo purposes we can load 2 images"""
-    frame1 = cv2.imread(os.path.join(base_path, 'calib_img_0.tiff'))
-    frame2 = cv2.imread(os.path.join(base_path, 'calib_img_1.tiff'))
+    frame1 = cv2.imread(os.path.join(base_path, 'artwork', 'calib_img_0.tiff'))
+    frame2 = cv2.imread(os.path.join(base_path, 'artwork', 'calib_img_1.tiff'))
 
     return frame1, frame2
 
@@ -119,7 +119,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setFixedSize(800, 480)  # Do not allow the window to resize on RPi
 
         # Set the GUI title
-        self.setWindowTitle('Postural Sway Assessment Tool')
+        self.setWindowTitle('BIGKAT')
         QtWidgets.QApplication.setStyle(QtWidgets.QStyleFactory.create(
             'Cleanlooks'))  # Set the GUI look style
 
@@ -140,30 +140,34 @@ class MainWindow(QtWidgets.QMainWindow):
         """Add a menubar to the main UI. This controls all the buttons in the menubar"""
 
         # drop down menu
-        exitAction = QtWidgets.QAction(
-            QtGui.QIcon('exit.png'), '&Shutdown', self)
+        exitAction = QtWidgets.QAction(QtGui.QIcon(os.path.join(
+            base_path, 'artwork', 'shutdown_key.png')), '&Shutdown', self)
         exitAction.setStatusTip('Shutdown PSAT')
         exitAction.triggered.connect(self.shutdown_event)
 
         # New participant button
         new_partMenu = QtWidgets.QAction(
-            QtGui.QIcon('exit.png'), '&New Participant', self)
+            QtGui.QIcon(os.path.join(
+                base_path, 'artwork', 'new_key.png')), '&New Participant', self)
         new_partMenu.triggered.connect(self.new_participant)
 
         # Choose storage location
         data_locMenu = QtWidgets.QAction(QtGui.QIcon(
-            'exit.png'), '&Set Save Directory', self)
+            os.path.join(
+                base_path, 'artwork', 'save_key.png')), '&Set Save Directory', self)
         data_locMenu.triggered.connect(self.get_storage_location)
 
         # Load a participant list
         self.part_listMenu = QtWidgets.QAction(
-            QtGui.QIcon(''), '&Load Participant List', self)
+            QtGui.QIcon(os.path.join(
+                base_path, 'artwork', 'load_key.png')), '&Load Participant List', self)
         self.part_listMenu.triggered.connect(self.toggle_load_part_button)
 
         # Select different windows
 
         self.processDataMenu = QtWidgets.QAction(
-            QtGui.QIcon(''), '&Process Data', self)
+            QtGui.QIcon(os.path.join(
+                base_path, 'artwork', 'process_key.png')), '&Process Data', self)
         self.processDataMenu.triggered.connect(self.processing_window)
 
         # Add the menubar and the menu buttons
