@@ -5,10 +5,10 @@ Camera calibration procedure for the postural camera system
 
 """
 
-#import posturalCam_master_NETWORK as backend
-import posturalTemp as backend
 import os
 
+# import posturalCam_master_NETWORK as backend
+import posturalTemp as backend
 
 folder = 'Calibration Videos Data/Calib 5'
 
@@ -98,49 +98,45 @@ def stereo_lef_right_calibrate():
 
 
 def calibrate_stereo_left_preview():
-
     proc = backend.posturalProc(
         v_fname=os.path.join(folder, 'slaveLeft.h264'), kind='client_left_preview')
     proc2 = backend.posturalProc(
         v_fname=os.path.join(folder, 'Master.h264'), kind='server_preview')
     stereo = backend.stereo_process(proc, proc2, kind='left')
 
-#    stereo.get_calibration_frames() #You will need to then place the calibration images into the correct folders (Set this up to do automatically)
+    #    stereo.get_calibration_frames() #You will need to then place the calibration images into the correct folders (Set this up to do automatically)
     stereo.stereo_calibrate()
 
     return stereo
 
 
 def calibrate_stereo_right_preview():
-
     proc = backend.posturalProc(
         v_fname=os.path.join(folder, 'slaveRight.h264'), kind='client_right_preview')
     proc2 = backend.posturalProc(
         v_fname=os.path.join(folder, 'Master.h264'), kind='server_preview')
     stereo = backend.stereo_process(proc, proc2, kind='right')
 
-#    stereo.get_calibration_frames() #You will need to then place the calibration images into the correct folders (Set this up to do automatically)
+    #    stereo.get_calibration_frames() #You will need to then place the calibration images into the correct folders (Set this up to do automatically)
     stereo.stereo_calibrate()
 
     return stereo
 
 
 def calibrate_stereo_left_right_preview():
-
     proc = backend.posturalProc(
         v_fname=os.path.join(folder, 'slaveRight.h264'), kind='client_right_preview')
     proc2 = backend.posturalProc(
         v_fname=os.path.join(folder, 'slaveLeft.h264'), kind='server_preview')
     stereo = backend.stereo_process(proc, proc2, kind='left_right')
 
-#    stereo.get_calibration_frames() #You will need to then place the calibration images into the correct folders (Set this up to do automatically)
+    #    stereo.get_calibration_frames() #You will need to then place the calibration images into the correct folders (Set this up to do automatically)
     stereo.stereo_calibrate()
 
     return stereo
 
 
 if __name__ == '__main__':
-
     """Comment out the functions you dont want to call by placing a # before them.
     Any problems contact Oscar Giles o.t.giles@leeds.ac.uk"""
 

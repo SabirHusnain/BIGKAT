@@ -7,6 +7,7 @@ Postural Sway Assesment Tool GUI.
 
 try:
     from PySide import QtGui, QtCore
+
     Signal = QtCore.Signal
     Slot = QtCore.Slot
 
@@ -17,39 +18,42 @@ except ImportError as exp:
     print("Looking for PyQT")
 
     from PyQt5 import QtGui, QtCore, QtWidgets
+
     Signal = QtCore.pyqtSignal
     Slot = QtCore.pyqtSlot
 
     onDesktop = True
 
-
-#import gc
-import cv2
+import calendar
+import collections
+import ctypes
+import glob
+import multiprocessing
+import os
+import pdb
+import subprocess
 import sys
 import threading
 import time
-import ctypes
-import pdb
-import os
+
+# import gc
+import cv2
+import matplotlib.pylab as plt
+import numpy as np
+import pandas as pd
+
+import ir_marker
 import posturalCam_master_NETWORK as backend
 from file_system import FileOrderingSystem
 from shh_client import shh_client
-import ir_marker
-import multiprocessing
-import pandas as pd
-import glob
-import numpy as np
-import matplotlib.pylab as plt
-import calendar
-import collections
-import subprocess
 
 # Switch to the directory that the file is in
 os.chdir(os.path.dirname(sys.argv[0]))
 sys.stderr = open("PSAT_Error.txt", 'w')
 sys.stdout = open("PSAT_out.txt", 'w')
 
-#import posturalCam_master_NETWORK as pCam
+
+# import posturalCam_master_NETWORK as pCam
 
 
 def vector_magnitude(v):
@@ -78,7 +82,7 @@ class cameraSystemDialog(QtWidgets.QDialog):
         self.setWindowTitle("PSAT")
         self.setModal(True)  # Lock focus on this widget
 
-#        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        #        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
 
         self.masterLayout = QtWidgets.QVBoxLayout()
 
@@ -134,7 +138,6 @@ class cameraSystemDialog(QtWidgets.QDialog):
             t1 = time.time() - t0
 
             if t1 > 1.5:
-
                 self.close()
                 break
 
@@ -151,25 +154,21 @@ class myDateLineEdit(QtWidgets.QLineEdit):
     clicked = Signal()
 
     def __init__(self):
-
         super(myDateLineEdit, self).__init__()
         self.setReadOnly(True)
         self.setText("DD/MM/YYYY")
 
     def mousePressEvent(self, e):
-
         #        print("DOB Pressed")
         #        self.setStyleSheet("""background-color: rgb(255,105,); """)
         self.clicked.emit()
         super(myDateLineEdit, self).mousePressEvent(e)
 
     def mouseReleaseEvent(self, e):
-
         #        self.setStyleSheet("""background-color: rgb(52,50,52);""")
         super(myDateLineEdit, self).mouseReleaseEvent(e)
 
     def reset_date(self):
-
         self.setText("DD/MM/YYYY")
 
 
@@ -183,10 +182,10 @@ class myDateDialog(QtWidgets.QDialog):
         self.setObjectName("MyDateDialog")
         self.setWindowTitle("Select DOB")
 
-#        self.setGeometry(100, 100, 10, 10)
+        #        self.setGeometry(100, 100, 10, 10)
 
-#        self.setFixedSize(600, 360) #Do not allow the window to resize
-#        self.move(10,10)
+        #        self.setFixedSize(600, 360) #Do not allow the window to resize
+        #        self.move(10,10)
         self.setModal(True)  # Window will be locked in focus
 
         self.decade = 2000  # Decade the calendar will start on
@@ -233,13 +232,12 @@ class myDateDialog(QtWidgets.QDialog):
             sorted(self.months.items(), key=lambda t: t[1]))
 
         month_labels = [key for key in self.months]
-#        print(month_labels)
+        #        print(month_labels)
         self.buttons = []
 
         i = 0
         for row in range(3):
             for col in range(4):
-
                 button = QtWidgets.QPushButton(month_labels[i])
                 button.clicked.connect(self.setMonth)
 
@@ -256,7 +254,7 @@ class myDateDialog(QtWidgets.QDialog):
 
         self.month_value = self.months[sender.text()]
 
-#        print(sender.text(), self.months[sender.text()])
+        #        print(sender.text(), self.months[sender.text()])
 
         self.monthView.hide()
         self.yearView.show()
@@ -278,7 +276,6 @@ class myDateDialog(QtWidgets.QDialog):
         i = 0
         for row in range(2):
             for col in range(5):
-
                 button = QtWidgets.QPushButton(str(display_years[i]))
                 button.clicked.connect(self.setYear)
                 self.yearButtons.append(button)
@@ -308,7 +305,7 @@ class myDateDialog(QtWidgets.QDialog):
 
         sender = self.sender().objectName()
 
-#        print(sender)
+        #        print(sender)
 
         if sender == 'next_decade':
 
@@ -328,7 +325,6 @@ class myDateDialog(QtWidgets.QDialog):
         i = 0
         for row in range(2):
             for col in range(5):
-
                 self.yearButtons[i].setText(str(display_years[i]))
                 i += 1
 
@@ -401,6 +397,8 @@ class myDateDialog(QtWidgets.QDialog):
 
         self.setGeometry(geom)
         super(myDateDialog, self).showEvent(event)
+
+
 #        print("SHOWING")
 
 
@@ -443,10 +441,10 @@ class recordingLocLabel(QtWidgets.QLabel):
         qp.setPen(pen)
         qp.setBrush(QtGui.QColor(52, 50, 52))
         qp.drawRect(0, 0, w, h)
-#        qp.drawText()
+        #        qp.drawText()
         pen = QtGui.QPen(QtGui.QColor(255, 255, 255), 1)
         qp.setPen(pen)
-        qp.drawText(int(w - self.textPosOffset), h-5, self.message)
+        qp.drawText(int(w - self.textPosOffset), h - 5, self.message)
 
     def scrollText(self):
 
@@ -473,7 +471,6 @@ class positionLabel(QtWidgets.QLabel):
     """Label for the distance from the center of the cameras"""
 
     def __init__(self, text):
-
         super(positionLabel, self).__init__(text)
 
         sizePolicy = QtWidgets.QSizePolicy(
@@ -482,11 +479,9 @@ class positionLabel(QtWidgets.QLabel):
         self.setSizePolicy(sizePolicy)
 
     def sizeHint(self):
-
         return QtCore.QSize(100, 100)
 
     def heightForWidth(self, width):
-
         return width
 
 
@@ -539,11 +534,10 @@ class positionWidget(QtWidgets.QWidget):
         qp.setBrush(QtGui.QColor(52, 50, 52))
         qp.drawRect(0, 0, w, h)
 
-
-#        pen = QtGui.QPen(QtGui.QColor(255,255,255), 10)
-#        qp.setPen(pen)
-#        qp.setBrush(QtGui.QColor(255,255,255))
-#        qp.drawRect(self.transform_pos(self.idealPos - self.error, self.minPos, step), 0, self.error * 2 * step, h)
+        #        pen = QtGui.QPen(QtGui.QColor(255,255,255), 10)
+        #        qp.setPen(pen)
+        #        qp.setBrush(QtGui.QColor(255,255,255))
+        #        qp.drawRect(self.transform_pos(self.idealPos - self.error, self.minPos, step), 0, self.error * 2 * step, h)
 
         # Draw the line
         if (self.idealPos - self.error) < self.value < (self.idealPos + self.error):
@@ -562,7 +556,6 @@ class positionWidget(QtWidgets.QWidget):
     def setValue(self, value):
         """If the value has changed repaint the widget"""
         if value != self.value:
-
             self.value = value
             self.repaint()
 
@@ -598,7 +591,7 @@ class virtualKeyboard(QtWidgets.QDialog):
 
         self.alt_key_labels = [['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
                                ['@', '£', '&', '_',
-                                   '(', ')', ':', ';', '"', ''],
+                                '(', ')', ':', ';', '"', ''],
                                ['', '!', '#', '=', '*', '/', '+', '-', '*', ''],
                                ['CAP', ',', '.', '', '', '', '', '', '<-', ''],
                                ['', 'Spacebar', '']]
@@ -690,7 +683,7 @@ class virtualKeyboard(QtWidgets.QDialog):
         self.button_case = 'upper'  # Start the buttons in lower case. Used to toggle the case
         self.alt_keys = False  # Start not on alt keys
 
-#        self.key_buttons = [[Text_Button(k) for k in row] for row in self.lower_key_labels] #Create all the buttons
+        #        self.key_buttons = [[Text_Button(k) for k in row] for row in self.lower_key_labels] #Create all the buttons
 
         for row in self.buttons:
             for k in row:
@@ -739,13 +732,11 @@ class virtualKeyboard(QtWidgets.QDialog):
 
         self.setLayout(master_grid)
 
-#        self.set_case('lower')
+    #        self.set_case('lower')
 
-#        self.setStyleSheet("background-color: rgba(0, 0, 0, 100%);")
+    #        self.setStyleSheet("background-color: rgba(0, 0, 0, 100%);")
 
-
-#        self.hide() #Make the keyboard invisible
-
+    #        self.hide() #Make the keyboard invisible
 
     def connect_to_buttons(self, obj):
         """connect all the buttons to a suitable Qt object"""
@@ -808,7 +799,6 @@ class virtualKeyboard(QtWidgets.QDialog):
             for row in self.buttons:
                 for k in row:
                     if k['type'] == 'text':
-
                         k['button'].change_text(k['lower'])
 
     @Slot(int)
@@ -862,7 +852,6 @@ class Icon_Button(QtWidgets.QToolButton):
         return size
 
     def mousePressEvent(self, e):
-
         self.pressed.emit()
 
         self.setStyleSheet("""background-color: rgb(255, 105, 0); 
@@ -870,7 +859,6 @@ class Icon_Button(QtWidgets.QToolButton):
                             color: rgb(255,255,255);""")
 
     def mouseReleaseEvent(self, e):
-
         if self.text != '':
             self.setStyleSheet("""background-color: rgb(52,50,52); color: rgb(255,255,255); border: 1px solid rgb(34, 85, 96); 
                                      border-radius: 0px; font-family: embrima; font-size: 17px; font-weight: 700 """)
@@ -901,7 +889,6 @@ class Text_Button(QtWidgets.QToolButton):
     def mousePressEvent(self, e):
 
         if self.text != '':
-
             self.pressed.emit(self.text)
             print("Key: {}".format(self.text))
 
@@ -977,7 +964,6 @@ class MyTimeLineEdit(QtWidgets.QLineEdit):
             else:
 
                 if self.test_int(inp):
-
                     self.text2 += inp
 
             self.setText(self.text2)
@@ -1146,13 +1132,12 @@ class MyDateEdit(QtWidgets.QDateEdit):
 
         self.setDate(QtCore.QDate(2000, 1, 1))
 
-#    def mousePressEvent(self, e):
-#
-#        self.pressed.emit() #Emit a signal when the key is pressed
-#        print("Key Pressed")
+    #    def mousePressEvent(self, e):
+    #
+    #        self.pressed.emit() #Emit a signal when the key is pressed
+    #        print("Key Pressed")
 
     def focusInEvent(self, e):
-
         QtWidgets.QDateEdit.focusInEvent(self, QtGui.QFocusEvent(
             QtCore.QEvent.FocusIn))  # Call the default In focus event
 
@@ -1161,7 +1146,6 @@ class MyDateEdit(QtWidgets.QDateEdit):
         print("IN")
 
     def focusOutEvent(self, e):
-
         QtWidgets.QDateEdit.focusOutEvent(self, QtGui.QFocusEvent(
             QtCore.QEvent.FocusOut))  # Call the default Outfocus event
 
@@ -1171,15 +1155,12 @@ class MyDateEdit(QtWidgets.QDateEdit):
 
     @Slot(str)
     def recieve_input(self, inp):
-
         if self.in_focus:
-
             self.text = self.sectionText(self.currentSection())
             print(self.text, self.currentSection())
             print(self.date())
 
     def reset_date(self):
-
         self.setDate(QtCore.QDate(2000, 1, 1))
 
 
@@ -1252,7 +1233,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # Just a work around, but the onDesktop variable should be depreciated in future
         onDesktop = False
         if not onDesktop:
-
             # self.launch_server_pi()
             self.camera_backend_live = False  # Marker that backend has been imported
             self.create_camera_backend()
@@ -1290,7 +1270,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Add the menubar and the menu buttons
         menubar = self.menuBar()
 
-#        menubar.setFixedHeight(25)
+        #        menubar.setFixedHeight(25)
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(exitAction)
 
@@ -1306,7 +1286,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         menubar.setCornerWidget(self.rec_scroll, QtCore.Qt.TopRightCorner)
 
-#        menubar.setCornerWidget(test_lab, QtCore.Qt.TopRightCorner)
+        #        menubar.setCornerWidget(test_lab, QtCore.Qt.TopRightCorner)
 
         self.timer.timeout.connect(self.rec_scroll.scrollText)
         self.timer.start(33)
@@ -1394,7 +1374,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # self.camera_backend_live = self.backend_camera.TCP_client_start() #If it connects set the backend_live = True
 
-#        self.camera_backend_live = True #Signal that the backend has been imported
+    #        self.camera_backend_live = True #Signal that the backend has been imported
 
     def start_camera_backend_connection(self):
 
@@ -1428,20 +1408,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
         grid = QtWidgets.QGridLayout()
         grid.setSpacing(15)
-#        grid.setMargin(0)
+        #        grid.setMargin(0)
 
         grid.addWidget(self.create_demographics_group(), 0, 0, 3, 1)
         grid.addWidget(self.create_camera_group(), 0, 0, 1, 1)
-#        grid.addWidget(self.create_recording_group(), 0, 0, 1, 1)
+        #        grid.addWidget(self.create_recording_group(), 0, 0, 1, 1)
         grid.addWidget(self.create_processing_group(), 0, 0, 1, 1)
 
-
-#        grid.addWidget(self.create_keyboard(), 3, 0, 4, 1)
+        #        grid.addWidget(self.create_keyboard(), 3, 0, 4, 1)
 
         if onDesktop:
             #            self.show_window_3()
             self.show_window_1()
-#            self.show_window_2()
+        #            self.show_window_2()
         else:
 
             self.show_window_1()
@@ -1450,6 +1429,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self.central_widget)
 
         # Demographics box
+
     def create_info_group(self):
 
         self.info_box = QtWidgets.QGroupBox("Info")
@@ -1489,7 +1469,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # Check that a file was selected and load the file
 
         if self.participant_list_fname != '':
-
             self.participant_list = pd.read_csv(self.participant_list_fname)
             self.participant_list_loaded = True
 
@@ -1559,7 +1538,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.Surname_edit.text2 = part_surname
 
                 self.Record_Time.set_text(str(part_recTime))
-#                self.Record_Time.text2 = part_recTime
+                #                self.Record_Time.text2 = part_recTime
 
                 if part_Gender.upper() == 'M':
                     self.Gender_edit.setCurrentIndex(0)
@@ -1570,17 +1549,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 self.Condition_edit.clear()
 
-#                for entry in part_data['Condition'].values:
-#                    self.Condition_edit.addItem(entry)
+                #                for entry in part_data['Condition'].values:
+                #                    self.Condition_edit.addItem(entry)
 
                 for e in range(len(part_data)):
-
                     entry = part_data.iloc[e]
 
                     self.Condition_edit.addItem(entry['Condition'])
 
 
-#                print(len(part_data))
+        #                print(len(part_data))
 
         else:
             print("Load a participant list first")
@@ -1613,14 +1591,14 @@ class MainWindow(QtWidgets.QMainWindow):
             part_recTime = part_data_cond['Recording_Time'].values[0]
 
             self.Record_Time.set_text(str(part_recTime))
-#            self.Record_Time.text2 = part_recTime
+
+    #            self.Record_Time.text2 = part_recTime
 
     def check_participant_not_run(self):
         """Checks if this participant entry has already been run"""
 
         if self.participant_list_loaded:
             if self.participant_list.loc[self.current_entry_index, 'Run'] == 1:
-
                 message_box = QtWidgets.QMessageBox()
                 message_box.setText("This participant entry was already run\n")
                 message_box.setIcon(QtWidgets.QMessageBox.Information)
@@ -1632,7 +1610,6 @@ class MainWindow(QtWidgets.QMainWindow):
         """Call at the end of recording. If self.participant_list is loaded then update the last recording entry to recorded"""
 
         if self.participant_list_loaded:
-
             # Once the recording has happened set the Run to 1
             self.participant_list.loc[self.current_entry_index, 'Run'] = 1
 
@@ -1642,9 +1619,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def show_window_1(self):
         """Show the demographics window"""
-#        self.demographicsBox.show()
-#        self.camera_box.hide()
-#        self.recording_box.hide()
+        #        self.demographicsBox.show()
+        #        self.camera_box.hide()
+        #        self.recording_box.hide()
         self.camera_container.hide()
         self.demographics_container.show()
         self.show_keyboard()
@@ -1671,14 +1648,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def show_window_3(self):
         """Show the processing window"""
-#        self.timer.stop()#Stop the timer that controls the scrolling text on the menubar
+        #        self.timer.stop()#Stop the timer that controls the scrolling text on the menubar
         self.camera_container.hide()
         self.demographics_container.hide()
         self.load_directory()
         self.processingBox.show()
-#        self.demographicsBox.hide()
-#        self.camera_box.hide()
-#        self.recording_box.hide()
+        #        self.demographicsBox.hide()
+        #        self.camera_box.hide()
+        #        self.recording_box.hide()
         self.hide_keyboard()
 
         if self.preview_live:
@@ -1706,23 +1683,23 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pointListBox.setHeaderItem(header)
         self.load_directory()
 
-#        processTab = QtWidgets.QTabWidget()
-#        tab1 = QtWidgets.QWidget()
-#        tab2 = QtWidgets.QWidget()
-#        tab3 = QtWidgets.QWidget()
+        #        processTab = QtWidgets.QTabWidget()
+        #        tab1 = QtWidgets.QWidget()
+        #        tab2 = QtWidgets.QWidget()
+        #        tab3 = QtWidgets.QWidget()
 
-#        processTab.addTab(tab1,"3d Data")
-#        processTab.addTab(tab2,"Tab 2")
-#        processTab.addTab(tab3,"Tab 3")
+        #        processTab.addTab(tab1,"3d Data")
+        #        processTab.addTab(tab2,"Tab 2")
+        #        processTab.addTab(tab3,"Tab 3")
 
         processing_grid = QtWidgets.QGridLayout()
 
-#        demographics_grid.addWidget(New_participant, 0, 0, 1, 1)
+        #        demographics_grid.addWidget(New_participant, 0, 0, 1, 1)
 
         processing_grid.addWidget(get_dir_button, 5, 0, 1, 1)
         processing_grid.addWidget(process_data_button, 5, 1, 1, 1)
         processing_grid.addWidget(self.pointListBox, 0, 0, 5, 5)
-#        processing_grid.addWidget(processTab, 0, 1, 5, 2)
+        #        processing_grid.addWidget(processTab, 0, 1, 5, 2)
         processing_grid.setSpacing(10)
 
         self.processingBox.setLayout(processing_grid)
@@ -1788,10 +1765,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 if rec.checkState(0) == 2:
                     print(rec_name)
                     n_records_to_process += 1
-#        pop_up_processor = QtWidgets.QWidget()
-#        pop_up_processor.setGeometry(QtCore.QRect(100, 100, 400, 200))
-#        pop_up_processor.show()
-#
+        #        pop_up_processor = QtWidgets.QWidget()
+        #        pop_up_processor.setGeometry(QtCore.QRect(100, 100, 400, 200))
+        #        pop_up_processor.show()
+        #
         self.msg = QtWidgets.QWidget()
         self.msg.setGeometry(QtCore.QRect(200, 100, 400, 300))
         self.msg.setWindowTitle("Data Processing")
@@ -1816,14 +1793,14 @@ class MainWindow(QtWidgets.QMainWindow):
         pop_up_processor_grid.addWidget(cancel_button, 4, 1, 1, 1)
 
         self.msg.setLayout(pop_up_processor_grid)
-#        msg.setIcon(QtWidgets.QMessageBox.Information)
-#        msg.setText("Processing data")
-#        msg.setInformativeText("You have selected {} records to process".format(len(self.all_records)))
-#        msg.setWindowTitle("Data Processing")
-#        msg.setDetailedText("Click OK to process all selected data\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
-#        msg.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+        #        msg.setIcon(QtWidgets.QMessageBox.Information)
+        #        msg.setText("Processing data")
+        #        msg.setInformativeText("You have selected {} records to process".format(len(self.all_records)))
+        #        msg.setWindowTitle("Data Processing")
+        #        msg.setDetailedText("Click OK to process all selected data\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+        #        msg.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
 
-#        b = QtWidgets.QPushButton( "HI", msg)
+        #        b = QtWidgets.QPushButton( "HI", msg)
         retval = self.msg.show()
 
     def process_selected_data(self):
@@ -1832,7 +1809,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Loop over records
         # Check if 3d data process
         # If not process the data
-#        self.console.Text()
+        #        self.console.Text()
 
         fos = FileOrderingSystem()  # File processing system object
 
@@ -1881,8 +1858,8 @@ class MainWindow(QtWidgets.QMainWindow):
                             proc_all_markers, proc2_all_markers)
                         markers3d_filt = stereo.kalman_smoother(markers3d)
 
-                        marker_mid_3d = np.sum(markers3d, axis=1)/2.0
-                        marker_mid_3d_filt = np.sum(markers3d_filt, axis=1)/2.0
+                        marker_mid_3d = np.sum(markers3d, axis=1) / 2.0
+                        marker_mid_3d_filt = np.sum(markers3d_filt, axis=1) / 2.0
 
                         distance_between_leds_filt = np.sqrt(
                             np.sum(np.square(np.diff(markers3d_filt, axis=1)), axis=2)).squeeze()
@@ -1906,7 +1883,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         summary = pd.Series(
                             {'PL1': PL[0], 'PL2': PL[1], 'MID': PL_mid})
                         summary.to_csv(os.path.join(rec_name, 'summary.csv'))
-#                        pd.DataFrame({'PL': np.append(PL, PL_mid)}).to_csv(os.path.join(rec_name, 'summary.csv'))
+                        #                        pd.DataFrame({'PL': np.append(PL, PL_mid)}).to_csv(os.path.join(rec_name, 'summary.csv'))
                         self.console.addText(
                             "\tPath Length: {}".format(np.append(PL, PL_mid)))
 
@@ -1924,7 +1901,6 @@ class MainWindow(QtWidgets.QMainWindow):
         for rec, rec_name in self.all_records:
 
             if rec.checkState(0) == 2:
-
                 summary = pd.Series.from_csv(
                     os.path.join(rec_name, 'summary.csv'))
                 demographics = pd.Series.from_csv(
@@ -1939,8 +1915,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # Save a csv of the summarised data
         master_dataFrame.to_csv(os.path.join(
             os.getcwd(), 'recorded_data', 'master_data.csv'))
-#                print(summary)
-#                print(demographics)
+
+    #                print(summary)
+    #                print(demographics)
 
     def create_demographics_group(self):
 
@@ -1954,7 +1931,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         HBox = QtWidgets.QHBoxLayout()
         HBox.setSpacing(20)
-#        HBox.setMargin(0)
+        #        HBox.setMargin(0)
         HBox.addWidget(self.demographicsBox)
         HBox.addWidget(self.optionsBox)
 
@@ -1962,19 +1939,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.demographics_container.setLayout(VBox)
 
-        #Labels and buttons
-#        rec_loc_label = QtWidgets.QLabel('Recording Loc')
-#        self.rec_loc_ = QtWidgets.QLabel('')
+        # Labels and buttons
+        #        rec_loc_label = QtWidgets.QLabel('Recording Loc')
+        #        self.rec_loc_ = QtWidgets.QLabel('')
 
         Forename_label = QtWidgets.QLabel('Forename:')
         self.Forename_edit = MyLineEdit(self)
-#        self.Forename_edit.pressed.connect(self.show_keyboard)
-#        self.Forename_edit.end_focus.connect(self.hide_keyboard)
+        #        self.Forename_edit.pressed.connect(self.show_keyboard)
+        #        self.Forename_edit.end_focus.connect(self.hide_keyboard)
 
         Surname_label = QtWidgets.QLabel('Surname:')
         self.Surname_edit = MyLineEdit(self)
-#        self.Surname_edit.pressed.connect(self.show_keyboard)
-#        self.Surname_edit.end_focus.connect(self.hide_keyboard)
+        #        self.Surname_edit.pressed.connect(self.show_keyboard)
+        #        self.Surname_edit.end_focus.connect(self.hide_keyboard)
 
         Gender = QtWidgets.QLabel('Gender:')
         self.Gender_edit = QtWidgets.QComboBox()
@@ -1989,34 +1966,34 @@ class MainWindow(QtWidgets.QMainWindow):
         self.Condition_edit.currentIndexChanged.connect(self.change_condition)
         self.Condition_edit.setStyleSheet("border-color: rgb(221, 89, 2)")
 
-#        self.ID_edit.pressed.connect(self.show_keyboard)
-#        self.ID_edit.end_focus.connect(self.hide_keyboard)
+        #        self.ID_edit.pressed.connect(self.show_keyboard)
+        #        self.ID_edit.end_focus.connect(self.hide_keyboard)
 
-#        d.show()
-#        self.d = myDateDialog()
+        #        d.show()
+        #        self.d = myDateDialog()
         DOB = QtWidgets.QLabel('DOB:')
         self.DOB_edit = myDateLineEdit()
         self.DOB_edit.clicked.connect(self.getDOB)
 
         Record_Time_label = QtWidgets.QLabel("Time (Seconds):")
-#        self.Record_Time = QtWidgets.QDoubleSpinBox()
-#        self.Record_Time.setMinimum(0)
-#        self.Record_Time.setValue(10)
+        #        self.Record_Time = QtWidgets.QDoubleSpinBox()
+        #        self.Record_Time.setMinimum(0)
+        #        self.Record_Time.setValue(10)
         self.Record_Time = MyTimeLineEdit(self)
         self.Record_Time.set_text("5")
 
-#        self.load_IDs = QtWidgets.QPushButton("Load Part List")
-#        self.load_IDs.setFixedSize(150,35)
-# self.load_IDs.clicked.connect(self.load_file)
-#        self.load_IDs.clicked.connect(self.toggle_load_part_button)
+        #        self.load_IDs = QtWidgets.QPushButton("Load Part List")
+        #        self.load_IDs.setFixedSize(150,35)
+        # self.load_IDs.clicked.connect(self.load_file)
+        #        self.load_IDs.clicked.connect(self.toggle_load_part_button)
 
         check_ID = QtWidgets.QPushButton("Verify")
-#        check_ID.setFixedSize(5,30)
+        #        check_ID.setFixedSize(5,30)
         check_ID.setStyleSheet("background-color: rgb(16, 159, 221)")
         check_ID.clicked.connect(self.find_participant)
 
         start_Rec = QtWidgets.QPushButton("Next")
-#        start_Rec.setFixedSize(5,30)
+        #        start_Rec.setFixedSize(5,30)
         start_Rec.clicked.connect(self.show_window_2)
 
         demographics_grid = QtWidgets.QGridLayout()
@@ -2024,8 +2001,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         demographics_grid.setContentsMargins(10, 25, 10, 10)
 
-#        demographics_grid.addWidget(rec_loc_label, 0, 0, 1, 1)
-##        demographics_grid.addWidget(self.rec_loc_, 0, 1, 1, 1)
+        #        demographics_grid.addWidget(rec_loc_label, 0, 0, 1, 1)
+        ##        demographics_grid.addWidget(self.rec_loc_, 0, 1, 1, 1)
 
         demographics_grid.addWidget(Forename_label, 0, 0, 1, 1)
         demographics_grid.addWidget(self.Forename_edit, 0, 1, 1, 1)
@@ -2044,7 +2021,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         demographics_grid.addWidget(check_ID, 2, 3, 1, 1)
 
-#        demographics_grid.addWidget(rec_loc_label, 3,0, 1, 1)
+        #        demographics_grid.addWidget(rec_loc_label, 3,0, 1, 1)
 
         self.demographicsBox.setLayout(demographics_grid)
 
@@ -2059,35 +2036,35 @@ class MainWindow(QtWidgets.QMainWindow):
         options_grid.addWidget(start_Rec, 2, 1, 1, 1)
 
         self.optionsBox.setLayout(options_grid)
-#
-#        demographics_grid.addWidget(self.load_IDs, 3, 0, 1, 1)
+        #
+        #        demographics_grid.addWidget(self.load_IDs, 3, 0, 1, 1)
 
-#
-#        demographics_grid.addWidget(Condition, 3, 2, 1, 1)
-#        demographics_grid.addWidget(self.Condition_edit, 3, 3, 1, 1)
-#
-#        demographics_grid.addWidget(start_Rec, 3, 5, 1, 1)
-# demographics_grid.addWidget(New_participant, 3, 5, 1, 1)
+        #
+        #        demographics_grid.addWidget(Condition, 3, 2, 1, 1)
+        #        demographics_grid.addWidget(self.Condition_edit, 3, 3, 1, 1)
+        #
+        #        demographics_grid.addWidget(start_Rec, 3, 5, 1, 1)
+        # demographics_grid.addWidget(New_participant, 3, 5, 1, 1)
 
         VBox.addSpacing(5)
         self.create_keyboard()
         VBox.addWidget(self.keyboard)
-#        VBox.setMargin(0)
+        #        VBox.setMargin(0)
         VBox.setContentsMargins(0, 0, 0, 0)
 
         return self.demographics_container
 
     def getDOB(self):
         """Launch a QDIalog window to get the DOB for the participant"""
-#        #DOB should be a date format or a box to select the date
+        #        #DOB should be a date format or a box to select the date
         self.d = myDateDialog(self)
-#        self.d.move(50,50)
+        #        self.d.move(50,50)
         self.d.exec_()
 
         if self.d.result() == 0:
             DOB_val = self.d.save()
-#            DOB_val = DOB_val.toPyDateTime()
-#            DOB_str = DOB_val.strftime('%d/%m/%Y')
+            #            DOB_val = DOB_val.toPyDateTime()
+            #            DOB_str = DOB_val.strftime('%d/%m/%Y')
             self.DOB_edit.setText(DOB_val)
 
     def toggle_load_part_button(self):
@@ -2131,7 +2108,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         container_grid = QtWidgets.QVBoxLayout()
         container_grid.setContentsMargins(0, 0, 0, 0)
-#        container_grid.setMargin(0)
+        #        container_grid.setMargin(0)
 
         # Create a group box for each pane
         camera_box = QtWidgets.QGroupBox("Camera Preview")
@@ -2149,12 +2126,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
         control_layout = QtWidgets.QHBoxLayout()
         control_layout_spacer.addLayout(control_layout)
-#        control_layout.setMargin(15)
+        #        control_layout.setMargin(15)
 
         checkbox_container = QtWidgets.QWidget()
 
         checkbox_container.setObjectName("camera_checkbox")
-#        checkbox_container.setStyleSheet(".QWidget {border: 1px solid rgb(221,89,2)}; ")
+        #        checkbox_container.setStyleSheet(".QWidget {border: 1px solid rgb(221,89,2)}; ")
         checkbox_VLayout = QtWidgets.QVBoxLayout()
 
         self.preview_options_triangulate = QtWidgets.QCheckBox("Triangulate")
@@ -2256,8 +2233,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         client_cam_container.setLayout(client_cam_VLayout)
 
-#        server_cam_VLayout.setStretchFactor(self.label1, 10)
-#        client_cam_VLayout.setStretchFactor(self.label2, 10)
+        #        server_cam_VLayout.setStretchFactor(self.label1, 10)
+        #        client_cam_VLayout.setStretchFactor(self.label2, 10)
 
         camera_layout.addWidget(server_cam_container)
 
@@ -2268,7 +2245,7 @@ class MainWindow(QtWidgets.QMainWindow):
         control_triangLayout.addWidget(triangulation_box)
         control_triangLayout.addWidget(control_box)
         container_grid.addLayout(control_triangLayout)
-#        container_grid.addWidget(control_box)
+        #        container_grid.addWidget(control_box)
         container_grid.addWidget(camera_box)
 
         # Triangulation box
@@ -2286,8 +2263,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.z_ind_label.setObjectName("zLabel")
 
         self.z_ind_label.setAlignment(QtCore.Qt.AlignCenter)
-#        z_ind_label.setStyleSheet(""" QLabel {background-color: rgb(16, 159, 221);}""")
-#        z_ind_label.setContentsMargins(0,0,0,0)
+        #        z_ind_label.setStyleSheet(""" QLabel {background-color: rgb(16, 159, 221);}""")
+        #        z_ind_label.setContentsMargins(0,0,0,0)
 
         z_ind_layout.addWidget(self.z_ind_label)
 
@@ -2315,18 +2292,17 @@ class MainWindow(QtWidgets.QMainWindow):
         # Progress bar
         progress = QtWidgets.QProgressBar(self)
 
-        box_grid.addWidget(Start,               0, 2, 1, 2)
-        box_grid.addWidget(Record_time_label,   0, 0, 1, 1)
-        box_grid.addWidget(Record_time,         0, 1, 1, 1)
-        box_grid.addWidget(progress,            1, 0, 1, 4)
+        box_grid.addWidget(Start, 0, 2, 1, 2)
+        box_grid.addWidget(Record_time_label, 0, 0, 1, 1)
+        box_grid.addWidget(Record_time, 0, 1, 1, 1)
+        box_grid.addWidget(progress, 1, 0, 1, 4)
 
         box_grid.setSpacing(1)
         self.recording_box.setLayout(box_grid)
 
         return self.recording_box
 
-
-#        self.participant_list
+    #        self.participant_list
 
     def create_keyboard(self):
         """Virtual Keyboard"""
@@ -2340,14 +2316,14 @@ class MainWindow(QtWidgets.QMainWindow):
             self.Surname_edit.recieve_input)  # Connect this to the buttons
         self.keyboard.connect_to_buttons(
             self.ID_edit.recieve_input)  # Connect this to the buttons
-#        self.keyboard.connect_to_buttons(self.DOB_edit.recieve_input) #Connect this to the buttons
+        #        self.keyboard.connect_to_buttons(self.DOB_edit.recieve_input) #Connect this to the buttons
 
         self.keyboard.connect_to_buttons(self.Record_Time.recieve_input)
 
         self.Forename_edit.text_length.connect(self.keyboard.cap_zero_len)
         self.Surname_edit.text_length.connect(self.keyboard.cap_zero_len)
         self.ID_edit.text_length.connect(self.keyboard.cap_zero_len)
-#         spacebar.pressed.connect(self.Forename_edit.recieve_input)
+        #         spacebar.pressed.connect(self.Forename_edit.recieve_input)
         return self.keyboard
 
     def start_recording(self):
@@ -2357,7 +2333,6 @@ class MainWindow(QtWidgets.QMainWindow):
         run = self.check_participant_not_run()
 
         if run:
-
             return
 
             # Check a storage location has been set
@@ -2380,8 +2355,8 @@ class MainWindow(QtWidgets.QMainWindow):
         t = self.Record_Time.value()
         print("RECORD NOW FOR {}".format(t))
 
-#        progress_thread = threading.Thread(target = self.progressBar_update, args = (t,))
-#        progress_thread.start()
+        #        progress_thread = threading.Thread(target = self.progressBar_update, args = (t,))
+        #        progress_thread.start()
         print("REQUEST RECORDING")
         self.backend_camera.TCP_client_start_UDP(
             t, 'testIR.h264')  # Starts the video recording
@@ -2392,7 +2367,6 @@ class MainWindow(QtWidgets.QMainWindow):
         ts_error = self.check_timestamp_error()
 
         if ts_error:
-
             ts_msg = "There was a problem with the recording: One of the cameras dropped frames\nYou should rerun the recording. No data will be saved"
 
             ts_msgBox = QtWidgets.QMessageBox()
@@ -2404,11 +2378,10 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.record_options_send_video.isChecked():
             self.backend_camera.TCP_client_request_video()  # Request video
 
-
-#        IR_process_thread = threading.Thread(target = self.backend_camera.TCP_client_request_IRPoints)
-#        IR_process_thread.start()
+        #        IR_process_thread = threading.Thread(target = self.backend_camera.TCP_client_request_IRPoints)
+        #        IR_process_thread.start()
         self.recording_Terminate = True
-#        progress_thread.join()
+        #        progress_thread.join()
 
         QtWidgets.QApplication.processEvents()
 
@@ -2452,20 +2425,22 @@ class MainWindow(QtWidgets.QMainWindow):
     def get_demographics(self):
         """Retrieve the demographics information"""
 
-#        self.Forename_edit.text()
-#        self.Surname_edit.text()
-#        self.ID_edit.text()
-#        self.DOB_edit.date()
-#
+        #        self.Forename_edit.text()
+        #        self.Surname_edit.text()
+        #        self.ID_edit.text()
+        #        self.DOB_edit.date()
+        #
         demographics = {'forename': self.Forename_edit.text(), 'surname': self.Surname_edit.text(),
-                        'DOB': self.DOB_edit.text(), 'ID': self.ID_edit.text(), 'Gender': self.Gender_edit.currentText(), 'Experiment': 'ExpOne',
-                        'condition': self.Condition_edit.currentText(), 'RecTime':  self.Record_Time.value()}
+                        'DOB': self.DOB_edit.text(), 'ID': self.ID_edit.text(),
+                        'Gender': self.Gender_edit.currentText(), 'Experiment': 'ExpOne',
+                        'condition': self.Condition_edit.currentText(), 'RecTime': self.Record_Time.value()}
 
         return demographics
-#        self.Gender_edit.setCurrentIndex(0)
-#
-#
-#        self.DOB_edit.Date)
+
+    #        self.Gender_edit.setCurrentIndex(0)
+    #
+    #
+    #        self.DOB_edit.Date)
 
     def archive_files(self):
         """Move the recorded files to the appropriate directory"""
@@ -2538,7 +2513,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if ir1 != None:
 
             for mark in ir1:
-
                 #                 print(mark['pos'], mark['radius'])
                 cv2.circle(img1, (int(mark['pos'][0]), int(mark['pos'][1])), int(
                     mark['radius']), (255, 0, 0), 10)
@@ -2546,7 +2520,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if ir2 != None:
 
             for mark in ir2:
-
                 #                 print(mark['pos'], mark['radius'])
                 cv2.circle(img2, (int(mark['pos'][0]), int(mark['pos'][1])), int(
                     mark['radius']), (255, 0, 0), 10)
@@ -2559,11 +2532,11 @@ class MainWindow(QtWidgets.QMainWindow):
             markers3d = self.stereo.triangulate_all_get_PL(
                 ir1, ir2).squeeze()  # Get the marker positions in 3d space
 
-            self.marker_mid = np.sum(markers3d, axis=0)/2.0
+            self.marker_mid = np.sum(markers3d, axis=0) / 2.0
 
             # Calculate the distance of the marker from the center of the two camereas. Calculate the vector between the midpoint along T and the observed point. Then take it's magnitude
             marker_distance = vector_magnitude(
-                self.marker_mid - (self.stereo.T.flatten()/2.0))
+                self.marker_mid - (self.stereo.T.flatten() / 2.0))
 
             self.z_ind.setValue(marker_distance)
             self.z_ind_label.setText(str(int(marker_distance)))
@@ -2590,7 +2563,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
             # Draw markers to screen and trinagulate
             if self.preview_options_triangulate.isChecked() and (f1 != None) and (f2 != None):
-
                 f1, f2 = self.preview_triangulate(f1, f2)
 
             if (f1 == 'DEAD') or (f2 == "DEAD"):
@@ -2599,7 +2571,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
             # Hand videos to rendering functions
             if f1 != None:
-
                 self.render_preview(f1, self.label1)
 
             if f2 != None:
@@ -2632,7 +2603,7 @@ if __name__ == '__main__':
         # Needs to be set else the multiprocessing in the camera_backend fails for some reason
         multiprocessing.set_start_method("spawn")
     app = QtWidgets.QApplication(sys.argv)
-#    app.autoSipEnabled()
+    #    app.autoSipEnabled()
     ex = MainWindow()
 
     ex.setStyleSheet("""QMainWindow {background: rgb(13,11,13)}

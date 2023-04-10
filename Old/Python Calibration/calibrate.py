@@ -40,7 +40,7 @@ if __name__ == '__main__':
         img_mask = img_mask[0]
 
     img_names = glob(img_mask)
-  
+
     debug_dir = args.get('--debug')
     if not os.path.isdir(debug_dir):
         os.mkdir(debug_dir)
@@ -81,7 +81,7 @@ if __name__ == '__main__':
             print('chessboard not found')
             continue
 
-        img_points.append(corners.reshape(-1, 2))        
+        img_points.append(corners.reshape(-1, 2))
         obj_points.append(pattern_points)
 
         print('ok')
@@ -98,14 +98,14 @@ if __name__ == '__main__':
     for img_found in img_names_undistort:
         img = cv2.imread(img_found)
 
-        h,  w = img.shape[:2]
+        h, w = img.shape[:2]
         newcameramtx, roi = cv2.getOptimalNewCameraMatrix(camera_matrix, dist_coefs, (w, h), 1, (w, h))
 
         dst = cv2.undistort(img, camera_matrix, dist_coefs, None, newcameramtx)
 
         # crop and save the image
         x, y, w, h = roi
-        dst = dst[y:y+h, x:x+w]
+        dst = dst[y:y + h, x:x + w]
         outfile = img_found + '_undistorted.png'
         print('Undistorted image written to: %s' % outfile)
         cv2.imwrite(outfile, dst)

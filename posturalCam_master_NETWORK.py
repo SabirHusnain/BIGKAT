@@ -5,24 +5,24 @@ Date: May 8, 2023
 Description: Backend for BIGKAT
 """
 
-import sys
-import time
-import io
-import os
 import glob
-import pickle
-import socket
-import threading
-import subprocess
-import multiprocessing
-import queue
-import pdb
+import io
 import itertools
+import multiprocessing
+import os
+import pdb
+import pickle
+import queue
+import socket
 import struct
+import subprocess
+import sys
+import threading
+import time
 
 import psutil  # To monitor memory
 
-#import paramikomultiprocessing
+# import paramikomultiprocessing
 try:
     # Import picamera if we are not on windows (fudge to check if on RPi's)
     import picamera
@@ -47,7 +47,6 @@ if getattr(sys, 'frozen', False):
     base_path = sys._MEIPASS
 else:
     base_path = os.path.dirname(os.path.realpath(sys.argv[0]))
-
 
 # This next line may be important on the RPi? I can't remember why it is here
 try:
@@ -75,9 +74,9 @@ class NN_PiVideoClient:
 
         self.camera = picamera.PiCamera(
             sensor_mode=sensor_mode, resolution=resolution, framerate=framerate)
-#        self.camera.resolution = resolution
-#        self.camera.framerate = framerate
-#        self.camera.shutter_speed = 10000
+        #        self.camera.resolution = resolution
+        #        self.camera.framerate = framerate
+        #        self.camera.shutter_speed = 10000
         if resize == None:
             self.RawCapture = PiRGBArray(self.camera, size=resolution)
         else:
@@ -101,7 +100,6 @@ class NN_PiVideoClient:
             self.RawCapture.truncate(0)
 
             if self.stopped:
-
                 self.stream.close()
                 self.RawCapture.close()
                 print("CAM CLOSE")
@@ -162,7 +160,6 @@ class PiVideoClient:
         """Read and decode a frame"""
 
         if self.stopped:
-
             return "DEAD"  # Return DEAD if the preview has finished
 
         if self.data != None:
@@ -216,7 +213,6 @@ class ts2Output(object):
     """Same as tsOutput but saves the timestamps to an array in memory. The array (tsarray) must be created before calling this function"""
 
     def __init__(self, camera, video_filename, ts_filename):
-
         self.camera = camera
         self.video_output = io.open(video_filename, 'wb')
         self.start_time = None
@@ -227,18 +223,15 @@ class ts2Output(object):
         self.video_file_subdir = "video_files"
 
     def write(self, buf):
-
         # Write the buffer to the video_output stream
         self.video_output.write(buf)
 
         if self.camera.frame.complete and self.camera.frame.timestamp:
-
             tsarray[self.i] = self.camera.frame.timestamp
 
             self.i += 1
 
     def flush(self):
-
         self.video_output.flush()
 
     def close(self):
@@ -274,11 +267,11 @@ class posturalCam:
         self.calibration_subdir = "calibration_images"
         self.video_file_subdir = "video_files"
 
-    #------------------------------------------#
-    #-------------Camera Methods---------------#
-    #------------------------------------------#
-    #------------------------------------------#
-    #------------------------------------------#
+    # ------------------------------------------#
+    # -------------Camera Methods---------------#
+    # ------------------------------------------#
+    # ------------------------------------------#
+    # ------------------------------------------#
 
     def init_camera(self):
         """Initialise the PiCamera
@@ -289,7 +282,7 @@ class posturalCam:
             sensor_mode=self.sensor_mode, resolution=self.resolution, framerate=self.framerate)
         self.camera.vflip = self.vflip
 
-#        self.camera.shutter_speed = 700
+    #        self.camera.shutter_speed = 700
 
     def record_video(self, t, preview=True, v_fname="temp_out.h264", v_format="h264"):
         """record video for t seconds and save to file. Save a second file with the time stamps
@@ -304,7 +297,7 @@ class posturalCam:
                                         level="4.2")
 
             self.camera.wait_recording(t)
-#            print("SHUT SPEED: {}".format(self.camera.exposure_speed))
+            #            print("SHUT SPEED: {}".format(self.camera.exposure_speed))
             self.camera.stop_recording()
         except:
             if preview:
@@ -312,18 +305,17 @@ class posturalCam:
             raise IOError("Camera could not record")
 
         if preview:
-
             self.camera.stop_preview()
 
     def destroy_camera(self):
         """Close the PiCamera. Always call at the end of recording"""
         self.camera.close()
 
-    #------------------------------------------#
-    #-----------Server Side Methods------------#
-    #------------------------------------------#
-    #------------------------------------------#
-    #------------------------------------------#
+    # ------------------------------------------#
+    # -----------Server Side Methods------------#
+    # ------------------------------------------#
+    # ------------------------------------------#
+    # ------------------------------------------#
 
     def TCP_server_start(self):
         """A TCP server to manage the serverCam.
@@ -445,7 +437,7 @@ class posturalCam:
 
         # Run checks to make sure we can shutdown
 
-#        subprocess.call(["sudo", 'shutdown', 'now'])
+        #        subprocess.call(["sudo", 'shutdown', 'now'])
         pass
 
     def TCP_server_send_camPreview(self):
@@ -478,7 +470,7 @@ class posturalCam:
 
         self.init_camera()
         self.camera.framerate = 30  # Change the framerate to 30fps
-#        self.camera.resolution = (640, 480)
+        #        self.camera.resolution = (640, 480)
 
         start = time.time()
         stream = io.BytesIO()
@@ -503,7 +495,7 @@ class posturalCam:
                 stream.truncate()
                 t1 = time.time()
                 print("Time: {} Memory: {}".format(
-                    1/(t1-t0), psutil.virtual_memory()[2]))
+                    1 / (t1 - t0), psutil.virtual_memory()[2]))
                 t0 = t1
 
             except:
@@ -525,7 +517,6 @@ class posturalCam:
             l = f_vid.read(1024)  # Read video data
 
             if not l:
-
                 break
 
             ntu.send_msg(self.clientsocket, l)
@@ -560,7 +551,7 @@ class posturalCam:
 
         # GET THE IR DATA POINTS. THEN SEND THEM
         self.proc = posturalProc(v_fname='server_video.h264', kind='server')
-    #                    markers = self.proc.get_ir_markers_parallel() #Get the markers in parallel
+        #                    markers = self.proc.get_ir_markers_parallel() #Get the markers in parallel
 
         # If parellel flag then use multiple cores to process the output
         if parallel:
@@ -610,9 +601,8 @@ class posturalCam:
         while True:
 
             if time.time() >= server_init_time + self.start_time_delta:
-
                 self.init_camera()
-#                time.sleep(1)
+                #                time.sleep(1)
                 self.record_video(
                     float(data_decoded[1]), v_fname='server_video.h264')
                 self.destroy_camera()
@@ -626,11 +616,11 @@ class posturalCam:
             print('UDP Server: sent {} bytes message back to {}: {}'.format(
                 sent, address, message))
 
-    #------------------------------------------#
-    #-----------Client Side Methods------------#
-    #------------------------------------------#
-    #------------------------------------------#
-    #------------------------------------------#
+    # ------------------------------------------#
+    # -----------Client Side Methods------------#
+    # ------------------------------------------#
+    # ------------------------------------------#
+    # ------------------------------------------#
 
     def TCP_client_start(self):
         """Start a TCP Client up.
@@ -718,8 +708,8 @@ class posturalCam:
 
         message = 'send_video'.encode()  # message to TCP server
 
-#        self.TCP_client_socket.send(struct.pack('<L', len(message))) #Send the length of the message to recieve
-#        self.TCP_client_socket.send(message) #Request video
+        #        self.TCP_client_socket.send(struct.pack('<L', len(message))) #Send the length of the message to recieve
+        #        self.TCP_client_socket.send(message) #Request video
         ntu.send_msg(self.TCP_client_socket, message)
 
         # Open the video file and wait to recieve the video
@@ -738,7 +728,7 @@ class posturalCam:
 
                 break
 
-#            data = self.TCP_client_socket.recv(data_len) #Recieve data of len data_len
+            #            data = self.TCP_client_socket.recv(data_len) #Recieve data of len data_len
             else:
                 f_video_recv.write(data)
 
@@ -752,9 +742,9 @@ class posturalCam:
         print("TCP Client: Requesting timestamps from server")
 
         ntu.send_msg(self.TCP_client_socket, 'send_timestamps'.encode())
-#        self.TCP_client_socket.send("send_timestamps".encode())
+        #        self.TCP_client_socket.send("send_timestamps".encode())
 
-#        time_stamps_recv = open("time_stamps_server.csv", 'wb')
+        #        time_stamps_recv = open("time_stamps_server.csv", 'wb')
         time_stamps_bytes = b''  # Buffer for data
         print("TCP Client: Recieving data")
 
@@ -787,12 +777,12 @@ class posturalCam:
 
         q = queue.Queue(1)  # Queue to place the results into
         IR_Thread = threading.Thread(target=self.proc.get_ir_markers_parallel, kwargs={
-                                     'out_queue': q, 'callback_function': callback_function})
-#        IR_Thread = threading.Thread(target = self.proc.get_ir_markers, kwargs = {'out_queue': q})
+            'out_queue': q, 'callback_function': callback_function})
+        #        IR_Thread = threading.Thread(target = self.proc.get_ir_markers, kwargs = {'out_queue': q})
         IR_Thread.start()  # Start the marker thread
 
         # Get server data
-#
+        #
         print("TCP Client: Requesting IR Points data")
         ntu.send_msg(self.TCP_client_socket, 'send_IRPoints:parallel'.encode())
 
@@ -803,7 +793,6 @@ class posturalCam:
         ir_points_out = q.get()
 
         if IR_Thread.is_alive():
-
             IR_Thread.join()  # Wait for IR Thread to finish
 
         return ir_points_out, self.IR_points_server
@@ -828,8 +817,8 @@ class posturalCam:
             split_name[0], split_name[1])
 
         message = 'start_UDP'.encode()
-#        self.TCP_client_socket.send(struct.pack('<L', len(message))) #Send the length of the message to recieve
-#        self.TCP_client_socket.send(message)
+        #        self.TCP_client_socket.send(struct.pack('<L', len(message))) #Send the length of the message to recieve
+        #        self.TCP_client_socket.send(message)
 
         ntu.send_msg(self.TCP_client_socket, message)
 
@@ -899,21 +888,19 @@ class posturalCam:
         while True:
 
             if time.time() >= init_time:
-
                 self.init_camera()
 
-
-#                time.sleep(1)
+                #                time.sleep(1)
                 self.record_video(t, preview=True, v_fname=self.video_fname)
                 self.destroy_camera()
                 print('UDP Client: Recording finished')
                 break
 
-    #------------------------------------------#
-    #---------Server side video preview--------#
-    #------------------------------------------#
-    #------------------------------------------#
-    #------------------------------------------#
+    # ------------------------------------------#
+    # ---------Server side video preview--------#
+    # ------------------------------------------#
+    # ------------------------------------------#
+    # ------------------------------------------#
 
     def videoPreview(self):
         """Preview video on this RPi"""
@@ -986,9 +973,8 @@ class posturalProc:
             if self.v_fname in glob.glob('*.h264'):
                 print("FILE EXISTS")
             self.cap = cv2.VideoCapture(self.v_fname)
-#            pdb.set_trace()
+            #            pdb.set_trace()
             if self.cap.isOpened() != True:
-
                 raise IOError("Video could not be loaded. Check file exists")
 
             self.v_loaded = True
@@ -1083,10 +1069,10 @@ class posturalProc:
 
             thresh = cv2.threshold(fgmask, 2, 255, cv2.THRESH_BINARY)[1]
 
-#            frame[thresh == 0] = [0,0,0]
-#            plt.plot(fgmask.flatten())
-#            plt.show()
-#            pdb.set_trace()
+            #            frame[thresh == 0] = [0,0,0]
+            #            plt.plot(fgmask.flatten())
+            #            plt.show()
+            #            pdb.set_trace()
 
             cv2.imshow("fgmask", fgmask)
             cv2.imshow("thresh", thresh)
@@ -1110,12 +1096,12 @@ class posturalProc:
         """Allows us to choose images for calibrating the RPi Camera. The more the merrier (get lots of images from different angles"""
 
         i = 0
-#        Check for previous files
+        #        Check for previous files
         master_dir = os.getcwd()
 
         if not os.path.exists(os.path.join(master_dir, 'calibration', self.kind)):
             os.makedirs(os.path.join(master_dir, 'calibration', self.kind))
-#        os.chdir(os.path.join(master_dir, "calibration", self.kind)) #Go to the calibration images directory
+        #        os.chdir(os.path.join(master_dir, "calibration", self.kind)) #Go to the calibration images directory
         file_list = glob.glob(os.path.join(
             master_dir, 'calibration', self.kind, '*.tiff'))
         output_list = glob.glob(os.path.join(
@@ -1132,7 +1118,6 @@ class posturalProc:
                     os.remove(f)
 
                 for f2 in output_list:
-
                     os.remove(f2)
 
             elif cont.lower() == 'a':
@@ -1148,7 +1133,7 @@ class posturalProc:
                 print("Escaping calibration")
                 return
 
-#        os.chdir(master_dir)
+        #        os.chdir(master_dir)
 
         print("Camera Calibration: Loading Video")
         self.load_video()  # Make sure the calibration video is loaded
@@ -1176,8 +1161,8 @@ class posturalProc:
             elif key_press == ord("s"):
 
                 cv2.imwrite(os.path.join(os.getcwd(), 'calibration',
-                            self.kind, 'calib_img_{}.tiff'.format(i)), frame)
-#                np.save(os.path.join(os.getcwd(), 'calibration', 'calib_img_{}'.format(i)), frame)
+                                         self.kind, 'calib_img_{}.tiff'.format(i)), frame)
+                #                np.save(os.path.join(os.getcwd(), 'calibration', 'calib_img_{}'.format(i)), frame)
                 i += 1
                 ret, frame = self.cap.read()
 
@@ -1239,7 +1224,7 @@ class posturalProc:
                 cv2.drawChessboardCorners(vis, pattern_size, corners, found)
                 path, name, ext = splitfn(fn)
 
-                outfile = os.path.join(debug_dir, name+'_chess.png')
+                outfile = os.path.join(debug_dir, name + '_chess.png')
                 cv2.imwrite(outfile, vis)
                 if found:
                     img_names_undistort.append(outfile)
@@ -1293,10 +1278,9 @@ class posturalProc:
         # undistort the image with the calibration
         print('')
         for img_found in img_names_undistort:
-
             img = cv2.imread(img_found)
 
-            h,  w = img.shape[:2]
+            h, w = img.shape[:2]
             newcameramtx, roi = cv2.getOptimalNewCameraMatrix(
                 self.camera_matrix, self.dist_coefs, (w, h), 1, (w, h))
 
@@ -1304,8 +1288,8 @@ class posturalProc:
                                 self.dist_coefs, None, newcameramtx)
 
             # crop and save the image
-#            x, y, w, h = roi
-#            dst = dst[y:y+h, x:x+w]
+            #            x, y, w, h = roi
+            #            dst = dst[y:y+h, x:x+w]
             outfile = img_found.split(".png")[0] + '_undistorted.png'
             print('Undistorted image written to: %s' % outfile)
             cv2.imwrite(outfile, dst)
@@ -1322,8 +1306,8 @@ class posturalProc:
         # Go to the calibration images directory
         os.chdir(os.path.join(master_dir, "calibration"))
         # Run the calibration
-        mtx = np.array([[400, 0, self.resolution[0]/2],
-                        [0, 400, self.resolution[1]/2],
+        mtx = np.array([[400, 0, self.resolution[0] / 2],
+                        [0, 400, self.resolution[1] / 2],
                         [0, 0, 1]])
         print(mtx)
         print("Camera Calibration: Calibrating Camera. Please wait... This may take several minutes or longer")
@@ -1331,10 +1315,11 @@ class posturalProc:
                                                 flags=cv2.CALIB_ZERO_TANGENT_DIST)
 
         print(self.calib_params[1])
-#        self.calib_params = cv2.calibrateCamera(self.objpoints, self.imgpoints, self.resolution, proc.calib_params[1], proc.calib_params[2],
-#                                                flags = cv2.CALIB_USE_INTRINSIC_GUESS | cv2.CALIB_ZERO_TANGENT_DIST)
+        #        self.calib_params = cv2.calibrateCamera(self.objpoints, self.imgpoints, self.resolution, proc.calib_params[1], proc.calib_params[2],
+        #                                                flags = cv2.CALIB_USE_INTRINSIC_GUESS | cv2.CALIB_ZERO_TANGENT_DIST)
 
-        self.calib_params = cv2.calibrateCamera(self.objpoints, self.imgpoints, self.resolution, self.calib_params[1], self.calib_params[2],
+        self.calib_params = cv2.calibrateCamera(self.objpoints, self.imgpoints, self.resolution, self.calib_params[1],
+                                                self.calib_params[2],
                                                 flags=cv2.CALIB_USE_INTRINSIC_GUESS)
 
         print("Reprojection Error: {}".format(self.calib_params[0]))
@@ -1368,17 +1353,17 @@ class posturalProc:
 
         squares = (11, 4)
 
-#        ##Square number format
+        #        ##Square number format
         self.objp = np.zeros((np.prod(squares), 3), np.float32)
         objp[:, :2] = np.mgrid[0:squares[0], 0:squares[1]].T.reshape(-1, 2)
-#
+        #
         # mm format
         square_size = 24.5  # mm
 
-#        objp = np.zeros((np.prod(squares), 3), np.float32)
+        #        objp = np.zeros((np.prod(squares), 3), np.float32)
 
-#        p = itertools.product(np.arange(0,square_size*squares[0],square_size), np.arange(0,square_size*squares[1],square_size))
-#        objp[:,:2] = np.array([i for i in p])[:,::-1]
+        #        p = itertools.product(np.arange(0,square_size*squares[0],square_size), np.arange(0,square_size*squares[1],square_size))
+        #        objp[:,:2] = np.array([i for i in p])[:,::-1]
 
         # Arrays to store object points and image points for all the images
         self.objpoints = []  # 3d points in real world space
@@ -1397,10 +1382,10 @@ class posturalProc:
             img = np.load(fname)
 
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-#            gray
-#            plt.imshow(gray, cmap = 'gray')
-#            plt.show()
-#            pdb.set_trace()
+            #            gray
+            #            plt.imshow(gray, cmap = 'gray')
+            #            plt.show()
+            #            pdb.set_trace()
             ret, corners = cv2.findCirclesGrid(
                 gray, squares, None, cv2.CALIB_CB_ASYMMETRIC_GRID)
 
@@ -1408,7 +1393,7 @@ class posturalProc:
                 print("Camera Calibration: Processing Image: {} of {}".format(
                     i, len_images))
                 self.objpoints.append(objp)
-#                cv2.cornerSubPix(gray, corners, (11,11), (-1,-1), criteria)
+                #                cv2.cornerSubPix(gray, corners, (11,11), (-1,-1), criteria)
 
                 self.imgpoints.append(corners)
 
@@ -1419,27 +1404,28 @@ class posturalProc:
             i += 1
         cv2.destroyAllWindows()
         cv2.waitKey(1)
-#        pdb.set_trace()
-        # Run the calibration
 
-#        print("Camera Calibration: Calibrating Camera. Please wait... This may take several minutes or longer")
-#        self.calib_params = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
-#        print("Reprojection Error: {}".format(self.calib_params[0]))
-#        self.calib_params = list(self.calib_params)
-#        self.calib_params.append(objpoints)
-#        self.calib_params.append(imgpoints)
-#        print("Camera Calibration: Calibration complete")
-#
-#        if self.kind == 'server':
-#            fname = 'server_camera_calib_params.pkl'
-#
-#        elif self.kind == 'client':
-#            fname = 'client_camera_calib_params.pkl'
-#
-#        with open(fname, 'wb') as f:
-#            pickle.dump(self.calib_params, f)
-#
-#        os.chdir(master_dir) #Set directory back to master directory.
+    #        pdb.set_trace()
+    # Run the calibration
+
+    #        print("Camera Calibration: Calibrating Camera. Please wait... This may take several minutes or longer")
+    #        self.calib_params = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+    #        print("Reprojection Error: {}".format(self.calib_params[0]))
+    #        self.calib_params = list(self.calib_params)
+    #        self.calib_params.append(objpoints)
+    #        self.calib_params.append(imgpoints)
+    #        print("Camera Calibration: Calibration complete")
+    #
+    #        if self.kind == 'server':
+    #            fname = 'server_camera_calib_params.pkl'
+    #
+    #        elif self.kind == 'client':
+    #            fname = 'client_camera_calib_params.pkl'
+    #
+    #        with open(fname, 'wb') as f:
+    #            pickle.dump(self.calib_params, f)
+    #
+    #        os.chdir(master_dir) #Set directory back to master directory.
 
     def check_camera_calibration(self):
         """DEPRECIATED
@@ -1448,7 +1434,6 @@ class posturalProc:
         tot_error = 0
 
         for i in range(len(self.objpoints)):
-
             imgpoints2, _ = cv2.projectPoints(
                 self.objpoints[i], self.rvecs[i], self.tvecs[i], self.mtx, self.dist)
             error = cv2.norm(
@@ -1456,7 +1441,7 @@ class posturalProc:
             tot_error += error
 
         print("Check Camera Calibration: Total Error: {}".format(
-            tot_error/len(self.objpoints)))
+            tot_error / len(self.objpoints)))
 
     def undistort(self, img):
         """undistort an image"""
@@ -1533,14 +1518,12 @@ class posturalProc:
                 ret, frame = self.cap.read()
 
                 if ret == False:
-
                     break
 
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 ret2, corners = cv2.findChessboardCorners(gray, squares, None)
 
                 if ret2:
-
                     corners2 = cv2.cornerSubPix(
                         gray, corners, (11, 11), (-1, -1), criteria)
 
@@ -1566,16 +1549,16 @@ class posturalProc:
         i = 0
         next_frame = True
 
-#        cv2.namedWindow("TB")
-#        cv2.createTrackbar("minThresh", "TB", 0,255, nothing)
-#        cv2.createTrackbar("maxThresh", "TB", 0,255, nothing)
-#
-#        cv2.createTrackbar("minArea", "TB", 0,255, nothing)
-#        cv2.createTrackbar("maxArea", "TB", 500,1500, nothing)
-#        cv2.createTrackbar("minCircularity", "TB", 8, 10, nothing)
-#
-#        cv2.createTrackbar("minConvex", "TB", 87,255, nothing)
-#        cv2.createTrackbar("minIntRatio", "TB", 5,255, nothing)
+        #        cv2.namedWindow("TB")
+        #        cv2.createTrackbar("minThresh", "TB", 0,255, nothing)
+        #        cv2.createTrackbar("maxThresh", "TB", 0,255, nothing)
+        #
+        #        cv2.createTrackbar("minArea", "TB", 0,255, nothing)
+        #        cv2.createTrackbar("maxArea", "TB", 500,1500, nothing)
+        #        cv2.createTrackbar("minCircularity", "TB", 8, 10, nothing)
+        #
+        #        cv2.createTrackbar("minConvex", "TB", 87,255, nothing)
+        #        cv2.createTrackbar("minIntRatio", "TB", 5,255, nothing)
 
         params = cv2.SimpleBlobDetector_Params()
 
@@ -1612,17 +1595,16 @@ class posturalProc:
                 ret, frame = self.cap.read()
 
                 if ret == False:
-
                     break
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-#           cv2.imshow("gray", gray)
+            #           cv2.imshow("gray", gray)
 
             keypoints = detector.detect(gray)
             im_with_keypoints = cv2.drawKeypoints(gray, keypoints, np.array(
                 []), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
-#           cv2.imshow("Raw", frame)
+            #           cv2.imshow("Raw", frame)
             cv2.imshow("blobs", im_with_keypoints)
             key_press = cv2.waitKey(1) & 0xFF
             if key_press == ord("n"):
@@ -1638,7 +1620,7 @@ class posturalProc:
         Currently tracking a mobile phone light. May need to get a visible light filter to only allow IR light through"""
 
         marker_file = "marker_data.csv"
-#        f = io.open(marker_file, 'w')
+        #        f = io.open(marker_file, 'w')
         self.load_video()
 
         cv2.namedWindow("HSV TRACKBARS")
@@ -1663,7 +1645,6 @@ class posturalProc:
                 ret, frame = self.cap.read()
 
                 if ret == False:
-
                     break
 
             frame2 = frame.copy()
@@ -1681,8 +1662,8 @@ class posturalProc:
             lower_blue = np.array([hue_low, sat_low, val_low])
             upper_blue = np.array([hue_high, sat_high, val_high])
 
-#           lower_blue = np.array([0,0,255])
-#           upper_blue = np.array([255,255,255])
+            #           lower_blue = np.array([0,0,255])
+            #           upper_blue = np.array([255,255,255])
 
             mask = cv2.inRange(hsv, lower_blue, upper_blue)
             mask = cv2.erode(mask, None, iterations=2)
@@ -1709,7 +1690,7 @@ class posturalProc:
                                int(radius), (0, 0, 255), 2)
                     cv2.circle(mask, (int(x), int(y)), 1, (255, 0, 255), 1)
 
-#                   f.write("{},{}\n".format(x,y))
+                #                   f.write("{},{}\n".format(x,y))
 
                 else:
                     #                   f.write("{},{}\n".format(-9999, -9999))
@@ -1750,7 +1731,7 @@ class posturalProc:
             M = cv2.moments(c)
             center = (int(M['m10'] / M['m00']), int(M['m01'] / M['m00']))
 
-#                   if r_low < radius and radius < r_high:
+            #                   if r_low < radius and radius < r_high:
 
             return (x, y), radius, center
 
@@ -1785,7 +1766,6 @@ class posturalProc:
             ret, frame = self.cap.read()
 
             if not ret:
-
                 self.cap.release()
                 break
 
@@ -1818,7 +1798,7 @@ class posturalProc:
 
         # Create the Workers
 
-#        max_jobs = 5 #Maximum number of items that can go in queue (may have to be small on RPi)    Now given as an argument
+        #        max_jobs = 5 #Maximum number of items that can go in queue (may have to be small on RPi)    Now given as an argument
         jobs = multiprocessing.Queue(max_jobs)
         results = multiprocessing.Queue()  # Queue to place the results into
 
@@ -1871,18 +1851,16 @@ class posturalProc:
         print(N_jobs)
 
         while (N_jobs_returned != N_jobs):
-
             dat = results.get()
 
             output.append(dat)
             N_jobs_returned += 1
-#            print("RETURNED: {}, Total: {}".format(N_jobs_returned, N_jobs))
+        #            print("RETURNED: {}, Total: {}".format(N_jobs_returned, N_jobs))
 
         print("KILL MY WORKERS")
 
         # Wait for workers to Die
         for worker in workers:
-
             worker.join()
 
             print("Worker joined")
@@ -1960,8 +1938,7 @@ class stereo_process:
             os.makedirs(os.path.join(
                 master_dir, 'calibration', 'stereo', 'server'))
 
-
-#        os.chdir(os.path.join(master_dir, "calibration", 'stereo')) #Go to the calibration images directory
+        #        os.chdir(os.path.join(master_dir, "calibration", 'stereo')) #Go to the calibration images directory
         client_file_list = glob.glob(os.path.join(
             master_dir, "calibration", 'stereo', 'client', 'calib*'))
         server_file_list = glob.glob(os.path.join(
@@ -1996,7 +1973,7 @@ class stereo_process:
 
         cv2.namedWindow("Server", cv2.WINDOW_NORMAL)
         cv2.namedWindow("Client", cv2.WINDOW_NORMAL)
-#               cv2.resizeWindow("Raw", int(resolution[0]/2), int(resolution[1]/2))
+        #               cv2.resizeWindow("Raw", int(resolution[0]/2), int(resolution[1]/2))
         while True:
 
             if ret_serv == False or ret_client == False:
@@ -2013,9 +1990,9 @@ class stereo_process:
             cv2.imshow("Client", frame_client)
 
             cv2.resizeWindow("Server", int(
-                resolution[0]/2), int(resolution[1]/2))
+                resolution[0] / 2), int(resolution[1] / 2))
             cv2.resizeWindow("Client", int(
-                resolution[0]/2), int(resolution[1]/2))
+                resolution[0] / 2), int(resolution[1] / 2))
 
             key_press = cv2.waitKey(1) & 0xFF
 
@@ -2029,12 +2006,12 @@ class stereo_process:
             elif key_press == ord("s"):
 
                 cv2.imwrite(os.path.join(os.getcwd(), 'calibration', 'stereo',
-                            'server', 'calib_img_serv_{}.tiff'.format(i)), frame_serv)
+                                         'server', 'calib_img_serv_{}.tiff'.format(i)), frame_serv)
                 cv2.imwrite(os.path.join(os.getcwd(), 'calibration', 'stereo',
-                            'client', 'calib_img_client_{}.tiff'.format(i)), frame_client)
+                                         'client', 'calib_img_client_{}.tiff'.format(i)), frame_client)
 
-#                np.save(os.path.join(os.getcwd(), 'calibration', 'calib_img_serv_{}'.format(i)), frame_serv)
-#                np.save(os.path.join(os.getcwd(), 'calibration', 'calib_img_client_{}'.format(i)), frame_client)
+                #                np.save(os.path.join(os.getcwd(), 'calibration', 'calib_img_serv_{}'.format(i)), frame_serv)
+                #                np.save(os.path.join(os.getcwd(), 'calibration', 'calib_img_client_{}'.format(i)), frame_client)
 
                 i += 1
                 ret_serv, frame_serv = self.cam_serv.cap.read()
@@ -2065,7 +2042,6 @@ class stereo_process:
         img_names_server = glob.glob("{}/*tiff".format(server_dir))
 
         if (len(img_names_client) == 0) and (len(img_names_server) == 0):
-
             img_names_client = glob.glob("{}/*jpeg".format(client_dir))
             img_names_server = glob.glob("{}/*jpeg".format(server_dir))
 
@@ -2124,9 +2100,10 @@ class stereo_process:
 
             print('ok')
 
-        self.retval, self.cameraMatrix1, self.distCoeffs1, self.cameraMatrix2, self.distCoeffs2, self.R, self.T, self.E, self.F = cv2.stereoCalibrate(self.obj_points, self.img_points_client, self.img_points_server,
-                                                                                                                                                      self.cam_client.camera_matrix, self.cam_client.dist_coefs,
-                                                                                                                                                      self.cam_serv.camera_matrix, self.cam_serv.dist_coefs, (w, h), flags=cv2.CALIB_FIX_INTRINSIC)
+        self.retval, self.cameraMatrix1, self.distCoeffs1, self.cameraMatrix2, self.distCoeffs2, self.R, self.T, self.E, self.F = cv2.stereoCalibrate(
+            self.obj_points, self.img_points_client, self.img_points_server,
+            self.cam_client.camera_matrix, self.cam_client.dist_coefs,
+            self.cam_serv.camera_matrix, self.cam_serv.dist_coefs, (w, h), flags=cv2.CALIB_FIX_INTRINSIC)
 
         self.P1 = np.dot(self.cameraMatrix1, np.hstack(
             (np.identity(3), np.zeros((3, 1)))))  # Projection Matrix for client cam
@@ -2152,7 +2129,7 @@ class stereo_process:
         DEPRECIATED
         This function only works when the image has resolution (1280, 720) """
 
-#        self.T[0,0] = -100
+        #        self.T[0,0] = -100
         self.rectif = cv2.stereoRectify(self.cameraMatrix1, self.distCoeffs1, self.cameraMatrix2, self.distCoeffs2,
                                         (1280, 720),
                                         self.R, self.T,
@@ -2241,11 +2218,10 @@ class stereo_process:
 
         # Triangulate each marker point
         for mark in range(client_n_markers):
-
             pos1 = client_markers[:, mark]
             pos2 = server_markers[:, mark]
 
-#            print(pos1.shape)
+            #            print(pos1.shape)
             pos1_undistort = self.cam_client.undistort_points(
                 np.expand_dims(pos1, 0)).squeeze(axis=1)
             pos2_undistort = self.cam_serv.undistort_points(
@@ -2256,7 +2232,7 @@ class stereo_process:
 
             pos1_corrected, pos2_corrected = pos1_corrected.squeeze(), pos2_corrected.squeeze()
 
-#            pos3d = self.triangulate(pos1_undistort.T, pos2_undistort.T)
+            #            pos3d = self.triangulate(pos1_undistort.T, pos2_undistort.T)
             pos3d = self.triangulate(pos1_corrected.T, pos2_corrected.T)
 
             markers_3d_all[:, mark, :] = pos3d
@@ -2273,12 +2249,11 @@ class stereo_process:
         filtered_markers = np.empty(markers_3d.shape)
 
         for mark in range(n_markers):
-
             pos3d = markers_3d[:, mark]
             kf = KalmanFilter(initial_state_mean=np.array(
                 [0, 0, 1000]), n_dim_obs=3)
 
-            dt = 1/60
+            dt = 1 / 60
             transition_M = np.array([[1, 0, 0, dt, 0, 0],
                                      [0, 1, 0, 0, dt, 0],
                                      [0, 0, 1, 0, 0, dt],
@@ -2296,7 +2271,8 @@ class stereo_process:
             transistionCov = trans_cov * np.eye(6)
             observationCov = obs_cov * np.eye(3)
 
-            kf = KalmanFilter(transition_matrices=transition_M,  observation_matrices=observation_M, initial_state_covariance=initcovariance, transition_covariance=transistionCov,
+            kf = KalmanFilter(transition_matrices=transition_M, observation_matrices=observation_M,
+                              initial_state_covariance=initcovariance, transition_covariance=transistionCov,
                               observation_covariance=observationCov)
 
             (filtered_state_means, filtered_state_covariances) = kf.smooth(measurements)
@@ -2318,15 +2294,14 @@ class stereo_process:
         filtered_markers = np.empty(markers_3d.shape)
 
         for mark in range(n_markers):
-
             pos3d = markers_3d[:, mark]
             kf = KalmanFilter(initial_state_mean=np.array(
                 [0, 0, 1000, 0, 0, 0, 0, 0, 0]), n_dim_obs=3)
 
-            dt = 1/60
-            transition_M = np.array([[1, 0, 0, dt, 0, 0, 0.5 * (dt**2), 0, 0],
-                                     [0, 1, 0, 0, dt, 0, 0, 0.5 * (dt**2), 0],
-                                     [0, 0, 1, 0, 0, dt, 0, 0, 0.5 * (dt**2)],
+            dt = 1 / 60
+            transition_M = np.array([[1, 0, 0, dt, 0, 0, 0.5 * (dt ** 2), 0, 0],
+                                     [0, 1, 0, 0, dt, 0, 0, 0.5 * (dt ** 2), 0],
+                                     [0, 0, 1, 0, 0, dt, 0, 0, 0.5 * (dt ** 2)],
                                      [0, 0, 0, 1, 0, 0, dt, 0, 0],
                                      [0, 0, 0, 0, 1, 0, 0, dt, 0],
                                      [0, 0, 0, 0, 0, 1, 0, 0, dt],
@@ -2344,7 +2319,8 @@ class stereo_process:
             transistionCov = trans_cov * np.eye(9)
             observationCov = obs_cov * np.eye(3)
 
-            kf = KalmanFilter(transition_matrices=transition_M,  observation_matrices=observation_M, initial_state_covariance=initcovariance, transition_covariance=transistionCov,
+            kf = KalmanFilter(transition_matrices=transition_M, observation_matrices=observation_M,
+                              initial_state_covariance=initcovariance, transition_covariance=transistionCov,
                               observation_covariance=observationCov)
 
             (filtered_state_means, filtered_state_covariances) = kf.smooth(measurements)
@@ -2362,7 +2338,6 @@ class stereo_process:
         filtered_markers = np.empty(markers_3d.shape)
 
         for mark in range(n_markers):
-
             filtered_markers[:, mark, 0] = butter_lowpass_filter(
                 markers_3d[:, mark, 0], cutoff, fs, order)
             filtered_markers[:, mark, 1] = butter_lowpass_filter(
@@ -2398,7 +2373,6 @@ class myThread(threading.Thread):
         self.kwargs = kwargs
 
     def run(self):
-
         self.func(*self.args, **self.kwargs)
 
 
@@ -2419,7 +2393,6 @@ def check_timestamp_error():
     time_server[time_server < 0] = np.NaN
 
     if np.any(np.abs(time_client - time_server) > 5):
-
         raise IOError("The time stamps are not in sync")
 
     return
@@ -2438,22 +2411,23 @@ def cam_client(t):
     myCam = posturalCam()
     myCam.TCP_client_start()
 
+    #    myCam.videoPreview()
+    #    myCam.TCP_client_request_videoPreview()
 
-#    myCam.videoPreview()
-#    myCam.TCP_client_request_videoPreview()
-
-#    while True:
-#        f1 = myCam.TCP_client_poll_videoPreview()
-#        f2 = myCam.poll_videoPreview()
-#
-#        if(f1 != None) and (f2 != None):
-#            print("F1: {}, F2: {}".format(f1.shape, f2.shape))
+    #    while True:
+    #        f1 = myCam.TCP_client_poll_videoPreview()
+    #        f2 = myCam.poll_videoPreview()
+    #
+    #        if(f1 != None) and (f2 != None):
+    #            print("F1: {}, F2: {}".format(f1.shape, f2.shape))
 
     myCam.TCP_client_start_UDP(t, 'testIR.h264')  # Starts the video recording
     myCam.TCP_client_request_timestamps()
     check_timestamp_error()
     myCam.TCP_client_request_video()
     myCam.TCP_client_close()
+
+
 #
 #
 #    self.backend_camera.TCP_client_start_UDP(t, 'testIR.h264') #Starts the video recording
@@ -2472,7 +2446,7 @@ def cam_client(t):
 
 
 #    pdb.set_trace()
-    # Ana
+# Ana
 
 
 def cam_get_x_vids(x):
@@ -2492,23 +2466,21 @@ def cam_get_x_vids(x):
 
 
 def main(t):
-
     # Check who we are
     global networked
     networked = True  # If True will run networked protocol. First checks IP address. If Server run server program. If client run client program
 
-
-#    pdb.set_trace()
+    #    pdb.set_trace()
     if networked:
         ip_addr = subprocess.check_output(
             ['hostname', '-I']).decode().strip(" \n")  # Get IP address
 
         if ip_addr == '192.168.0.2':
             mode = 'client'
-#            print("I am a {}".format(mode))
+            #            print("I am a {}".format(mode))
 
             cam_client(t)
-#            cam_get_x_vids(1) #Start the client camera
+        #            cam_get_x_vids(1) #Start the client camera
 
         elif ip_addr == '192.168.0.3':
             mode = 'server'
@@ -2577,7 +2549,7 @@ def test_stereo_calibration():
 
     img_p1_o, img_p2_o = cv2.correctMatches(stereo.F, img_p1.transpose(
         1, 0, 2), img_p2.transpose(1, 0, 2))  # Must be in format 1XNX2
-#    print(img_p1.transpose(1,0,2).shape)
+    #    print(img_p1.transpose(1,0,2).shape)
     img_p1, img_p2 = img_p1.squeeze(), img_p2.squeeze()
     img_p1_o, img_p2_o = img_p1_o.squeeze(), img_p2_o.squeeze()
     plt.figure()
@@ -2608,6 +2580,7 @@ def test_stereo_calibration():
     plt.figure()
     sns.distplot(p_diff.reshape((6, 9))[:, :-1].flatten())
 
+
 # proc.get_calibration_frames()
 # proc.camera_calibration()
 # proc.play_video()
@@ -2621,26 +2594,27 @@ def calibration_protocol():
     proc = posturalProc(v_fname='testIR.h264', kind='client')
     proc2 = posturalProc(v_fname='testIR_server.h264', kind='server')
 
-#    proc.get_calibration_frames()
-#    proc2.get_calibration_frames()
+    #    proc.get_calibration_frames()
+    #    proc2.get_calibration_frames()
 
-#    proc.camera_calibration()
-#    proc2.camera_calibration()
+    #    proc.camera_calibration()
+    #    proc2.camera_calibration()
 
     stereo = stereo_process(proc, proc2)
     # You will need to then place the calibration images into the correct folders (Set this up to do automatically)
     stereo.get_calibration_frames()
     stereo.stereo_calibrate()
+
+
 #    print(stereo.R)
 #    print(stereo.T)
 
 
 def marker_tracking3d_test():
-
     proc = posturalProc(v_fname='testIR.h264', kind='client')
     proc2 = posturalProc(v_fname='testIR_server.h264', kind='client')
 
-#    proc2.play_video()
+    #    proc2.play_video()
 
     proc_all_markers = ir_marker.markers2numpy(proc.get_ir_markers())
     proc2_all_markers = ir_marker.markers2numpy(proc2.get_ir_markers())
@@ -2657,6 +2631,8 @@ def marker_tracking3d_test():
         distance_between_leds)]
 
     plt.plot(distance_between_leds_nan)
+
+
 #    sns.distplot(distance_between_leds_nan)
 
 
@@ -2670,5 +2646,4 @@ def vector_magnitude(v):
 
 
 if __name__ == '__main__':
-
     cam_server()  # Run a server cam

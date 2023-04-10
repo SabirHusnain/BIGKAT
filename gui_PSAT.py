@@ -5,9 +5,10 @@ Postural Sway Assesment Tool GUI.
 
 """
 
-from PyQt5 import QtGui, QtCore, QtWidgets
-import cv2
 import sys
+
+import cv2
+from PyQt5 import QtGui, QtCore, QtWidgets
 
 import posturalCam_master_NETWORK as PSAT_core
 
@@ -40,7 +41,6 @@ class Button(QtWidgets.QToolButton):
         return size
 
     def mousePressEvent(self, e):
-
         self.pressed.emit(self.text)
         print("Key: {}".format(self.text))
 
@@ -128,7 +128,7 @@ class MainWindow(QtWidgets.QMainWindow):
         Preview_btn = QtWidgets.QPushButton("Start Camera Preview")
         grid.addWidget(Preview_btn, 4, 0, 1, 1)
 
-#        QtCore.QObject.connect(Shutdown, QtCore.pyqtSignal('clicked()'), self.shutdown_event) #Call shutdown function Old style
+        #        QtCore.QObject.connect(Shutdown, QtCore.pyqtSignal('clicked()'), self.shutdown_event) #Call shutdown function Old style
         grid.addWidget(self.create_keyboard(), 1, 0, 4, 6)
 
         self.central_widget.setLayout(grid)
@@ -163,7 +163,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         demographicsBox = QtWidgets.QGroupBox("Demographics")
 
-        #Labels and buttons
+        # Labels and buttons
         Forename_label = QtWidgets.QLabel('First Name(s)')
         self.Forename_edit = MyLineEdit(self)
         self.Forename_edit.pressed.connect(self.show_keyboard)
@@ -220,7 +220,7 @@ class MainWindow(QtWidgets.QMainWindow):
         box = QtWidgets.QGroupBox("Camera Status")
 
         box_grid = QtWidgets.QGridLayout()
-#        box_grid.addWidget(sc)
+        #        box_grid.addWidget(sc)
 
         # Camera feeds
         image_size = (220, 150)
@@ -270,10 +270,10 @@ class MainWindow(QtWidgets.QMainWindow):
         # Progress bar
         progress = QtWidgets.QProgressBar(self)
 
-        box_grid.addWidget(Start,               0, 2, 1, 2)
-        box_grid.addWidget(Record_time_label,   0, 0, 1, 1)
-        box_grid.addWidget(Record_time,         0, 1, 1, 1)
-        box_grid.addWidget(progress,            1, 0, 1, 4)
+        box_grid.addWidget(Start, 0, 2, 1, 2)
+        box_grid.addWidget(Record_time_label, 0, 0, 1, 1)
+        box_grid.addWidget(Record_time, 0, 1, 1, 1)
+        box_grid.addWidget(progress, 1, 0, 1, 4)
 
         box_grid.setSpacing(1)
         box.setLayout(box_grid)
@@ -294,7 +294,6 @@ class MainWindow(QtWidgets.QMainWindow):
         keys = []  # List of key buttons
         for row in range(len(key_labels)):
             for k in range(len(key_labels[row])):
-
                 key_ = Button(key_labels[row][k])
 
                 # It must connect to each line input
@@ -319,7 +318,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                     border: 0px;
                                     color: rgb(255,255,255);""")
 
-        key_grid.addWidget(spacebar, row+1, 1, 1, 8)
+        key_grid.addWidget(spacebar, row + 1, 1, 1, 8)
 
         self.keyboard.setLayout(key_grid)
 
@@ -327,17 +326,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.keyboard.hide()  # Make the keyboard invisible
 
-#        self.Forename_edit.hasFocus()
+        #        self.Forename_edit.hasFocus()
 
-#        self.Forename_edit.cursorPositionChanged.connect(self.toggle_keyboard)
+        #        self.Forename_edit.cursorPositionChanged.connect(self.toggle_keyboard)
 
         return self.keyboard
 
 
 if __name__ == '__main__':
-
     app = QtWidgets.QApplication(sys.argv)
-#    app.autoSipEnabled()
+    #    app.autoSipEnabled()
     ex = MainWindow()
 
     sys.exit(app.exec_())

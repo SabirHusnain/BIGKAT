@@ -27,7 +27,6 @@ import cv2
 import sys
 import os
 
-
 if getattr(sys, 'frozen', False):
     base_path = sys._MEIPASS
 else:
@@ -36,7 +35,6 @@ else:
 sys.stderr = open(os.path.join(base_path, 'stderr_log.txt'), 'w')
 sys.stdout = open(os.path.join(base_path, 'stdout.txt'), 'w')
 
-
 print("The basepath is {}".format(base_path))
 print(getattr(sys, 'frozen', False))
 print(os.path.dirname(sys.argv[0]))
@@ -44,13 +42,15 @@ print(os.path.dirname(os.path.realpath(sys.argv[0])))
 
 try:
     from PySide import QtWidgets, QtCore
+
     Signal = QtCore.Signal
     Slot = QtCore.Slot
 
-#   from PyQt4 import QtCore, QtWidgets  #Note that some code will need to be changed if this is used (Signal has different call signiture)
-#   Signal = QtCore.pyqtSignal
-#   Slot = QtCore.pyqtSlot
+    #   from PyQt4 import QtCore, QtWidgets  #Note that some code will need to be changed if this is used (Signal has different call signiture)
+    #   Signal = QtCore.pyqtSignal
+    #   Slot = QtCore.pyqtSlot
     import matplotlib
+
     matplotlib.use("Qt4Agg")
     matplotlib.rcParams['backend.qt4'] = 'PySide'
     onDesktop = False
@@ -60,6 +60,7 @@ except ImportError as exp:
     print("Looking for PyQT")
 
     from PyQt5 import QtGui, QtCore, QtWidgets
+
     Signal = QtCore.pyqtSignal
     Slot = QtCore.pyqtSlot
 
@@ -68,7 +69,7 @@ except ImportError as exp:
 debug = True
 
 
-#import posturalCam_master_NETWORK as pCam
+# import posturalCam_master_NETWORK as pCam
 def vector_magnitude(v):
     """Calculate the magnitude of a vector"""
 
@@ -84,6 +85,7 @@ def load_demo_images():
     frame2 = cv2.imread(os.path.join(base_path, 'artwork', 'calib_img_1.tiff'))
 
     return frame1, frame2
+
 
 ##---------------------------------------------##
 ##---------------------------------------------##
@@ -132,7 +134,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         onDesktop = False  # Just a work around, but the onDesktop variable should be depreciated in future. The app functions differently on the RPi and on windows
         if not onDesktop:
-
             self.camera_backend_live = False  # Marker that backend has been imported
             self.create_camera_backend()
 
@@ -173,7 +174,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Add the menubar and the menu buttons
         menubar = self.menuBar()
 
-#        menubar.setFixedHeight(25)
+        #        menubar.setFixedHeight(25)
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(exitAction)
 
@@ -189,7 +190,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         menubar.setCornerWidget(self.rec_scroll, QtCore.Qt.TopRightCorner)
 
-#        menubar.setCornerWidget(test_lab, QtCore.Qt.TopRightCorner)
+        #        menubar.setCornerWidget(test_lab, QtCore.Qt.TopRightCorner)
 
         self.timer.timeout.connect(self.rec_scroll.scrollText)
         self.timer.start(33)
@@ -208,18 +209,17 @@ class MainWindow(QtWidgets.QMainWindow):
         # Create and add the different displays (demographics; camera; and processing)
         grid.addWidget(self.create_demographics_group(), 0, 0, 3, 1)
         grid.addWidget(self.create_camera_group(), 0, 0, 1, 1)
-#        grid.addWidget(self.create_recording_group(), 0, 0, 1, 1)
+        #        grid.addWidget(self.create_recording_group(), 0, 0, 1, 1)
         grid.addWidget(self.create_processing_group(), 0, 0, 1, 1)
 
-
-#        grid.addWidget(self.create_keyboard(), 3, 0, 4, 1)
+        #        grid.addWidget(self.create_keyboard(), 3, 0, 4, 1)
 
         if onDesktop:
-         #            self.show_window_1()
+            #            self.show_window_1()
             self.show_window_3()
 
-#
-#            self.show_window_2()
+        #
+        #            self.show_window_2()
         else:
 
             self.show_window_1()
@@ -249,7 +249,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # self.camera_backend_live = self.backend_camera.TCP_client_start() #If it connects set the backend_live = True
 
-#        self.camera_backend_live = True #Signal that the backend has been imported
+    #        self.camera_backend_live = True #Signal that the backend has been imported
 
     def start_camera_backend_connection(self):
         """Try to establish a connection to the server RPi"""
@@ -280,16 +280,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.show_window_3()
 
-#        if not self.storage_loc == '':
-#
-#            self.show_window_3()
-#
-#        else:
-#
-#            error_msgBox = QtWidgets.QMessageBox(self)
-#            error_msgBox.setText("""A storage location has not been set.\n\nSelect a storage location by clicking Data Control -> Set Save Directory""" )
-#            error_msgBox.exec_()
-#            return
+    #        if not self.storage_loc == '':
+    #
+    #            self.show_window_3()
+    #
+    #        else:
+    #
+    #            error_msgBox = QtWidgets.QMessageBox(self)
+    #            error_msgBox.setText("""A storage location has not been set.\n\nSelect a storage location by clicking Data Control -> Set Save Directory""" )
+    #            error_msgBox.exec_()
+    #            return
 
     def get_storage_location(self):
         """Menubar function:
@@ -346,12 +346,12 @@ class MainWindow(QtWidgets.QMainWindow):
             QtCore.QCoreApplication.instance().quit()  # Quit Application.
 
     ##---------------------------------------------##
-        ##---------------------------------------------##
-        ##------------PSAT GUI LAYOUT METHODS----------##
-        ##---------------------------------------------##
-        ##---------------------------------------------##
-        ##---------------------------------------------##
-        ##---------------------------------------------##
+    ##---------------------------------------------##
+    ##------------PSAT GUI LAYOUT METHODS----------##
+    ##---------------------------------------------##
+    ##---------------------------------------------##
+    ##---------------------------------------------##
+    ##---------------------------------------------##
 
     def create_demographics_group(self):
         """Create the demographics window. Controls the layout and creates all the necessary widgets"""
@@ -365,7 +365,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         HBox = QtWidgets.QHBoxLayout()
         HBox.setSpacing(20)
-#        HBox.setMargin(0)
+        #        HBox.setMargin(0)
         HBox.addWidget(self.demographicsBox)
         HBox.addWidget(self.optionsBox)
 
@@ -373,19 +373,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.demographics_container.setLayout(VBox)
 
-        #Labels and buttons
-#        rec_loc_label = QtWidgets.QLabel('Recording Loc')
-#        self.rec_loc_ = QtWidgets.QLabel('')
+        # Labels and buttons
+        #        rec_loc_label = QtWidgets.QLabel('Recording Loc')
+        #        self.rec_loc_ = QtWidgets.QLabel('')
 
         Forename_label = QtWidgets.QLabel('Forename:')
         self.Forename_edit = MyLineEdit(self)
-#        self.Forename_edit.pressed.connect(self.show_keyboard)
-#        self.Forename_edit.end_focus.connect(self.hide_keyboard)
+        #        self.Forename_edit.pressed.connect(self.show_keyboard)
+        #        self.Forename_edit.end_focus.connect(self.hide_keyboard)
 
         Surname_label = QtWidgets.QLabel('Surname:')
         self.Surname_edit = MyLineEdit(self)
-#        self.Surname_edit.pressed.connect(self.show_keyboard)
-#        self.Surname_edit.end_focus.connect(self.hide_keyboard)
+        #        self.Surname_edit.pressed.connect(self.show_keyboard)
+        #        self.Surname_edit.end_focus.connect(self.hide_keyboard)
 
         Gender = QtWidgets.QLabel('Gender:')
         self.Gender_edit = QtWidgets.QComboBox()
@@ -408,35 +408,34 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ConditionStack.addWidget(self.Condition_edit_line)
         self.ConditionStack.setCurrentIndex(1)
 
+        #        self.ID_edit.pressed.connect(self.show_keyboard)
+        #        self.ID_edit.end_focus.connect(self.hide_keyboard)
 
-#        self.ID_edit.pressed.connect(self.show_keyboard)
-#        self.ID_edit.end_focus.connect(self.hide_keyboard)
-
-#        d.show()
-#        self.d = myDateDialog()
+        #        d.show()
+        #        self.d = myDateDialog()
         DOB = QtWidgets.QLabel('DOB:')
         self.DOB_edit = myDateLineEdit()
         self.DOB_edit.clicked.connect(self.getDOB)
 
         Record_Time_label = QtWidgets.QLabel("Time (Seconds):")
-#        self.Record_Time = QtWidgets.QDoubleSpinBox()
-#        self.Record_Time.setMinimum(0)
-#        self.Record_Time.setValue(10)
+        #        self.Record_Time = QtWidgets.QDoubleSpinBox()
+        #        self.Record_Time.setMinimum(0)
+        #        self.Record_Time.setValue(10)
         self.Record_Time = MyTimeLineEdit(self)
         self.Record_Time.set_text("30")
 
-#        self.load_IDs = QtWidgets.QPushButton("Load Part List")
-#        self.load_IDs.setFixedSize(150,35)
-# self.load_IDs.clicked.connect(self.load_file)
-#        self.load_IDs.clicked.connect(self.toggle_load_part_button)
+        #        self.load_IDs = QtWidgets.QPushButton("Load Part List")
+        #        self.load_IDs.setFixedSize(150,35)
+        # self.load_IDs.clicked.connect(self.load_file)
+        #        self.load_IDs.clicked.connect(self.toggle_load_part_button)
 
         check_ID = QtWidgets.QPushButton("Verify")
-#        check_ID.setFixedSize(5,30)
+        #        check_ID.setFixedSize(5,30)
         check_ID.setStyleSheet("background-color: rgb(16, 159, 221)")
         check_ID.clicked.connect(self.find_participant)
 
         start_Rec = QtWidgets.QPushButton("Next")
-#        start_Rec.setFixedSize(5,30)
+        #        start_Rec.setFixedSize(5,30)
         start_Rec.clicked.connect(self.show_window_2)
 
         demographics_grid = QtWidgets.QGridLayout()
@@ -444,8 +443,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         demographics_grid.setContentsMargins(10, 25, 10, 10)
 
-#        demographics_grid.addWidget(rec_loc_label, 0, 0, 1, 1)
-##        demographics_grid.addWidget(self.rec_loc_, 0, 1, 1, 1)
+        #        demographics_grid.addWidget(rec_loc_label, 0, 0, 1, 1)
+        ##        demographics_grid.addWidget(self.rec_loc_, 0, 1, 1, 1)
 
         demographics_grid.addWidget(Forename_label, 0, 0, 1, 1)
         demographics_grid.addWidget(self.Forename_edit, 0, 1, 1, 1)
@@ -464,7 +463,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         demographics_grid.addWidget(check_ID, 2, 3, 1, 1)
 
-#        demographics_grid.addWidget(rec_loc_label, 3,0, 1, 1)
+        #        demographics_grid.addWidget(rec_loc_label, 3,0, 1, 1)
 
         self.demographicsBox.setLayout(demographics_grid)
 
@@ -479,20 +478,20 @@ class MainWindow(QtWidgets.QMainWindow):
         options_grid.addWidget(start_Rec, 2, 1, 1, 1)
 
         self.optionsBox.setLayout(options_grid)
-#
-#        demographics_grid.addWidget(self.load_IDs, 3, 0, 1, 1)
+        #
+        #        demographics_grid.addWidget(self.load_IDs, 3, 0, 1, 1)
 
-#
-#        demographics_grid.addWidget(Condition, 3, 2, 1, 1)
-#        demographics_grid.addWidget(self.Condition_edit, 3, 3, 1, 1)
-#
-#        demographics_grid.addWidget(start_Rec, 3, 5, 1, 1)
-# demographics_grid.addWidget(New_participant, 3, 5, 1, 1)
+        #
+        #        demographics_grid.addWidget(Condition, 3, 2, 1, 1)
+        #        demographics_grid.addWidget(self.Condition_edit, 3, 3, 1, 1)
+        #
+        #        demographics_grid.addWidget(start_Rec, 3, 5, 1, 1)
+        # demographics_grid.addWidget(New_participant, 3, 5, 1, 1)
 
         VBox.addSpacing(5)
         self.create_keyboard()
         VBox.addWidget(self.keyboard)
-#        VBox.setMargin(0)
+        #        VBox.setMargin(0)
         VBox.setContentsMargins(0, 0, 0, 0)
 
         return self.demographics_container
@@ -505,7 +504,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         container_grid = QtWidgets.QVBoxLayout()
         container_grid.setContentsMargins(0, 0, 0, 0)
-#        container_grid.setMargin(0)
+        #        container_grid.setMargin(0)
 
         # Create a group box for each pane
         camera_box = QtWidgets.QGroupBox("Camera Preview")
@@ -523,12 +522,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
         control_layout = QtWidgets.QHBoxLayout()
         control_layout_spacer.addLayout(control_layout)
-#        control_layout.setMargin(15)
+        #        control_layout.setMargin(15)
 
         checkbox_container = QtWidgets.QWidget()
 
         checkbox_container.setObjectName("camera_checkbox")
-#        checkbox_container.setStyleSheet(".QWidget {border: 1px solid rgb(221,89,2)}; ")
+        #        checkbox_container.setStyleSheet(".QWidget {border: 1px solid rgb(221,89,2)}; ")
         checkbox_VLayout = QtWidgets.QVBoxLayout()
 
         self.preview_options_triangulate = QtWidgets.QCheckBox("Triangulate")
@@ -537,7 +536,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.record_options_send_video.setChecked(True)
         self.record_options_send_video.setEnabled(False)
         self.record_options_send_IRPoints = QtWidgets.QCheckBox("Process data")
-#        self.record_options_send_IRPoints.setEnabled(False)
+        #        self.record_options_send_IRPoints.setEnabled(False)
 
         checkbox_VLayout.addWidget(self.preview_options_triangulate)
         checkbox_VLayout.addWidget(self.record_options_send_video)
@@ -632,8 +631,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         client_cam_container.setLayout(client_cam_VLayout)
 
-#        server_cam_VLayout.setStretchFactor(self.label1, 10)
-#        client_cam_VLayout.setStretchFactor(self.label2, 10)
+        #        server_cam_VLayout.setStretchFactor(self.label1, 10)
+        #        client_cam_VLayout.setStretchFactor(self.label2, 10)
 
         camera_layout.addWidget(server_cam_container)
 
@@ -644,7 +643,7 @@ class MainWindow(QtWidgets.QMainWindow):
         control_triangLayout.addWidget(triangulation_box)
         control_triangLayout.addWidget(control_box)
         container_grid.addLayout(control_triangLayout)
-#        container_grid.addWidget(control_box)
+        #        container_grid.addWidget(control_box)
         container_grid.addWidget(camera_box)
 
         # Triangulation box
@@ -662,8 +661,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.z_ind_label.setObjectName("zLabel")
 
         self.z_ind_label.setAlignment(QtCore.Qt.AlignCenter)
-#        z_ind_label.setStyleSheet(""" QLabel {background-color: rgb(16, 159, 221);}""")
-#        z_ind_label.setContentsMargins(0,0,0,0)
+        #        z_ind_label.setStyleSheet(""" QLabel {background-color: rgb(16, 159, 221);}""")
+        #        z_ind_label.setContentsMargins(0,0,0,0)
 
         z_ind_layout.addWidget(self.z_ind_label)
 
@@ -697,7 +696,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         processing_button_layout = QtWidgets.QHBoxLayout()
         process_data_button = QtWidgets.QPushButton("Process data")
-#        process_data_button.clicked.connect(self.process_selected_data)
+        #        process_data_button.clicked.connect(self.process_selected_data)
         process_data_button.clicked.connect(self.process_selected_data_thread)
         reload_dir_button = QtWidgets.QPushButton("Reload data directory")
         reload_dir_button.clicked.connect(self.load_directory)
@@ -715,8 +714,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Fails to wipe the current tree (BUG). Removed for the moment
         get_dir_button.clicked.connect(self.load_directory)
 
-
-#        process_data_button.clicked.connect(self.process_data_popup) #Start the process data popup
+        #        process_data_button.clicked.connect(self.process_data_popup) #Start the process data popup
         # Becomes a list in later functions. If none then later functions wont execute
         self.all_records = None
 
@@ -726,29 +724,29 @@ class MainWindow(QtWidgets.QMainWindow):
         header = QtWidgets.QTreeWidgetItem(["Recorded_data"])
         # Another alternative is setHeaderLabels(["Tree","First",...])
         self.pointListBox.setHeaderItem(header)
-#        self.load_directory()
+        #        self.load_directory()
 
-#        processTab = QtWidgets.QTabWidget()
-#        tab1 = QtWidgets.QWidget()
-#        tab2 = QtWidgets.QWidget()
-#        tab3 = QtWidgets.QWidget()
+        #        processTab = QtWidgets.QTabWidget()
+        #        tab1 = QtWidgets.QWidget()
+        #        tab2 = QtWidgets.QWidget()
+        #        tab3 = QtWidgets.QWidget()
 
-#        processTab.addTab(tab1,"3d Data")
-#        processTab.addTab(tab2,"Tab 2")
-#        processTab.addTab(tab3,"Tab 3")
+        #        processTab.addTab(tab1,"3d Data")
+        #        processTab.addTab(tab2,"Tab 2")
+        #        processTab.addTab(tab3,"Tab 3")
 
         processing_layout.addWidget(self.pointListBox)
         processing_layout.addLayout(tab_layout)
-#        processing_layout.addWidget(processing_tabs)
-#        processing_grid = QtWidgets.QGridLayout()
+        #        processing_layout.addWidget(processing_tabs)
+        #        processing_grid = QtWidgets.QGridLayout()
 
-#        demographics_grid.addWidget(New_participant, 0, 0, 1, 1)
+        #        demographics_grid.addWidget(New_participant, 0, 0, 1, 1)
 
-#        processing_grid.addWidget(get_dir_button, 5,0, 1,1)
-#        processing_grid.addWidget(process_data_button, 5,1, 1,1)
-#        processing_grid.addWidget(self.pointListBox, 0, 0, 5, 5)
-#        processing_grid.addWidget(processTab, 0, 1, 5, 2)
-#        processing_grid.setSpacing(10)
+        #        processing_grid.addWidget(get_dir_button, 5,0, 1,1)
+        #        processing_grid.addWidget(process_data_button, 5,1, 1,1)
+        #        processing_grid.addWidget(self.pointListBox, 0, 0, 5, 5)
+        #        processing_grid.addWidget(processTab, 0, 1, 5, 2)
+        #        processing_grid.setSpacing(10)
 
         self.processingBox.setLayout(processing_layout)
         return self.processingBox
@@ -761,7 +759,6 @@ class MainWindow(QtWidgets.QMainWindow):
         for rec, rec_name in self.all_records:
 
             if rec == current_item:
-
                 self.record_item_clicked.emit(rec_name)
                 self.update_marker_tab(rec_name)
                 print(rec_name)
@@ -777,13 +774,13 @@ class MainWindow(QtWidgets.QMainWindow):
             # Reshape into an NxMX3 array (points, marker, axis)
             filt_data = filt_data.reshape(
                 filt_data.shape[0], int(filt_data.shape[1] / 3), 3)
-            marker_mid_3d_filt = np.sum(filt_data, axis=1)/2.0
+            marker_mid_3d_filt = np.sum(filt_data, axis=1) / 2.0
 
             non_filt_data = np.loadtxt(os.path.join(
                 rec_name, '3d_unfiltered.csv'), delimiter=',', skiprows=1)  # Load an array of markers
             non_filt_data = non_filt_data.reshape(non_filt_data.shape[0], int(
                 non_filt_data.shape[1] / 3), 3)  # Reshape into an NxMX3 array (points, marker, axis)
-            non_marker_mid_3d_filt = np.sum(non_filt_data, axis=1)/2.0
+            non_marker_mid_3d_filt = np.sum(non_filt_data, axis=1) / 2.0
 
             marker_mid_3d_filt[marker_mid_3d_filt == -999] = np.nan
             non_marker_mid_3d_filt[non_marker_mid_3d_filt == -999] = np.nan
@@ -791,7 +788,7 @@ class MainWindow(QtWidgets.QMainWindow):
             dist = np.sqrt(
                 np.sum(np.square(np.diff(marker_mid_3d_filt, axis=0)), axis=1))
 
-#            ax[0].plot(marker_mid_3d[:,0])
+            #            ax[0].plot(marker_mid_3d[:,0])
             self.ax[0].cla()
             self.ax[1].cla()
             self.ax[2].cla()
@@ -816,7 +813,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             print("no files")
 
-#        self.ax[0].plot(data, '*-')
+    #        self.ax[0].plot(data, '*-')
 
     def tab1_UI(self):
 
@@ -840,19 +837,19 @@ class MainWindow(QtWidgets.QMainWindow):
         # this is the Canvas Widget that displays the `figure`
         # it takes the `figure` instance as a parameter to __init__
         self.canvas = FigureCanvas(self.figure)
-#        data = [random.random() for i in range(10)]
+        #        data = [random.random() for i in range(10)]
 
         # create an axis
-#        self.ax = self.figure.add_subplot(111)
+        #        self.ax = self.figure.add_subplot(111)
 
         # discards the old graph
-#        self.ax.hold(False)
+        #        self.ax.hold(False)
 
         # plot data
-#        self.ax[0].plot(data, '*-')
-#        sns.despine()
+        #        self.ax[0].plot(data, '*-')
+        #        sns.despine()
         # refresh canvas
-#        self.canvas.draw()
+        #        self.canvas.draw()
 
         figure_layout.addWidget(self.canvas)
 
@@ -861,9 +858,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def show_window_1(self):
         """Show the demographics window"""
         self.window_live = 1
-#        self.demographicsBox.show()
-#        self.camera_box.hide()
-#        self.recording_box.hide()
+        #        self.demographicsBox.show()
+        #        self.camera_box.hide()
+        #        self.recording_box.hide()
         self.camera_container.hide()
         self.demographics_container.show()
         self.show_keyboard()
@@ -909,14 +906,14 @@ class MainWindow(QtWidgets.QMainWindow):
     def show_window_3(self):
         """Show the data processing window"""
         self.window_live = 3
-#        self.timer.stop()#Stop the timer that controls the scrolling text on the menubar
+        #        self.timer.stop()#Stop the timer that controls the scrolling text on the menubar
         self.camera_container.hide()
         self.demographics_container.hide()
         self.load_directory()
         self.processingBox.show()
-#        self.demographicsBox.hide()
-#        self.camera_box.hide()
-#        self.recording_box.hide()
+        #        self.demographicsBox.hide()
+        #        self.camera_box.hide()
+        #        self.recording_box.hide()
         self.hide_keyboard()
 
         if self.preview_live:
@@ -936,14 +933,14 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ID_edit.recieve_input)  # Connect this to the buttons
         self.keyboard.connect_to_buttons(
             self.Condition_edit_line.recieve_input)
-#        self.keyboard.connect_to_buttons(self.DOB_edit.recieve_input) #Connect this to the buttons
+        #        self.keyboard.connect_to_buttons(self.DOB_edit.recieve_input) #Connect this to the buttons
 
         self.keyboard.connect_to_buttons(self.Record_Time.recieve_input)
 
         self.Forename_edit.text_length.connect(self.keyboard.cap_zero_len)
         self.Surname_edit.text_length.connect(self.keyboard.cap_zero_len)
         self.ID_edit.text_length.connect(self.keyboard.cap_zero_len)
-#         spacebar.pressed.connect(self.Forename_edit.recieve_input)
+        #         spacebar.pressed.connect(self.Forename_edit.recieve_input)
         return self.keyboard
 
     def show_keyboard(self):
@@ -958,24 +955,24 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def getDOB(self):
         """Launch a QDialog window to get the DOB for the participant"""
-#        #DOB should be a date format or a box to select the date
+        #        #DOB should be a date format or a box to select the date
         self.d = myDateDialog(self)
-#        self.d.move(50,50)
+        #        self.d.move(50,50)
         self.d.exec_()
 
         if self.d.result() == 0:
             DOB_val = self.d.save()
-#            DOB_val = DOB_val.toPyDateTime()
-#            DOB_str = DOB_val.strftime('%d/%m/%Y')
+            #            DOB_val = DOB_val.toPyDateTime()
+            #            DOB_str = DOB_val.strftime('%d/%m/%Y')
             self.DOB_edit.setText(DOB_val)
 
     ##---------------------------------------------##
-        ##---------------------------------------------##
-        ##----------Participant List Functions---------##
-        ##---------------------------------------------##
-        ##---------------------------------------------##
-        ##---------------------------------------------##
-        ##---------------------------------------------##
+    ##---------------------------------------------##
+    ##----------Participant List Functions---------##
+    ##---------------------------------------------##
+    ##---------------------------------------------##
+    ##---------------------------------------------##
+    ##---------------------------------------------##
 
     def toggle_load_part_button(self):
         """
@@ -1030,18 +1027,18 @@ class MainWindow(QtWidgets.QMainWindow):
         # Check that a file was selected and load the file
 
         if self.participant_list_fname != '':
-
             self.participant_list = pd.read_csv(self.participant_list_fname)
             self.participant_list_loaded = True
 
             print(self.participant_list_fname[0])
 
             # Add a completer to the ID_edit (NOTE: Only works when typing with read keyboard. Needs bug fix)
-#            completer = QtWidgets.QCompleter()
-#            self.ID_edit.setCompleter(completer)
-#            model = QtWidgets.QStringListModel(list(self.participant_list['ID'].unique()))
-#            completer.setModel(model)
-#            self.ID_edit.textChanged.connect(completer.setCompletionPrefix)
+
+    #            completer = QtWidgets.QCompleter()
+    #            self.ID_edit.setCompleter(completer)
+    #            model = QtWidgets.QStringListModel(list(self.participant_list['ID'].unique()))
+    #            completer.setModel(model)
+    #            self.ID_edit.textChanged.connect(completer.setCompletionPrefix)
 
     def new_participant(self):
         """Menubar function:
@@ -1104,8 +1101,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.Surname_edit.text2 = part_surname
 
                 self.Record_Time.set_text(str(part_recTime))
-#                self.Record_Time.set_text('Hi')
-#                self.Record_Time.text2 = part_recTime
+                #                self.Record_Time.set_text('Hi')
+                #                self.Record_Time.text2 = part_recTime
 
                 if part_Gender.upper() == 'M':
                     self.Gender_edit.setCurrentIndex(0)
@@ -1116,16 +1113,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 self.Condition_edit.clear()
 
-#                for entry in part_data['Condition'].values:
-#                    self.Condition_edit.addItem(entry)
+                #                for entry in part_data['Condition'].values:
+                #                    self.Condition_edit.addItem(entry)
 
                 for e in range(len(part_data)):
-
                     entry = part_data.iloc[e]
 
                     self.Condition_edit.addItem(entry['Condition'])
 
-#                print(len(part_data))
+        #                print(len(part_data))
 
         else:
             print("Load a participant list first")
@@ -1159,15 +1155,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
             part_recTime = int(part_data_cond['Recording_Time'].values[0])
 
-#            self.Record_Time.set_text("HI")
+            #            self.Record_Time.set_text("HI")
             self.Record_Time.set_text(str(part_recTime))
-#            self.Record_Time.text2 = part_recTime
+
+    #            self.Record_Time.text2 = part_recTime
 
     def update_participant_list(self):
         """Call at the end of recording. If self.participant_list is loaded then update the last recording entry to recorded"""
 
         if self.participant_list_loaded:
-
             # Once the recording has happened set the Run to 1
             self.participant_list.loc[self.current_entry_index, 'Run'] = 1
 
@@ -1180,7 +1176,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if self.participant_list_loaded:
             if self.participant_list.loc[self.current_entry_index, 'Run'] == 1:
-
                 message_box = QtWidgets.QMessageBox()
                 message_box.setText("This participant entry was already run\n")
                 message_box.setIcon(QtWidgets.QMessageBox.Information)
@@ -1188,13 +1183,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 return True
 
-      ##---------------------------------------------##
-        ##---------------------------------------------##
-        ##---------------Data Processing---------------##
-        ##---------------------------------------------##
-        ##---------------------------------------------##
-        ##---------------------------------------------##
-        ##---------------------------------------------##
+    ##---------------------------------------------##
+    ##---------------------------------------------##
+    ##---------------Data Processing---------------##
+    ##---------------------------------------------##
+    ##---------------------------------------------##
+    ##---------------------------------------------##
+    ##---------------------------------------------##
 
     def load_directory(self):
         """Load a directory tree to show all the records than can be processed
@@ -1209,7 +1204,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
         print("Loading data")
-#        experiments = glob.glob(os.path.join(data_directory, '*'))
+        #        experiments = glob.glob(os.path.join(data_directory, '*'))
         self.pointListBox.clear()  # Clear the treewidget
         self.all_records = []
 
@@ -1236,7 +1231,7 @@ class MainWindow(QtWidgets.QMainWindow):
             records = glob.glob(os.path.join(part, '*'))
 
             for rec in records:
-               #                print(rec)
+                #                print(rec)
                 r_name = os.path.split(rec)[-1]
                 cond_name = pd.read_csv(os.path.join(
                     rec, 'demographics.csv'), header=None, index_col=0, squeeze=True, names=['Value']).loc['condition']
@@ -1280,14 +1275,13 @@ class MainWindow(QtWidgets.QMainWindow):
         while self.processing_live:
 
             if self.record_text != old_text:
-
                 self.processing_console.addText(self.record_text)
                 old_text = self.record_text
 
             # Add a progress bar or loading overlay
             QtWidgets.QApplication.processEvents()  # Update the GUI
 
-#        self.processing_console.clearConsole()
+        #        self.processing_console.clearConsole()
         self.processing_console.addText("Processing finished")
         self.processing_console.addText("It took {} seconds to process {} records".format(
             int(self.process_time), self.n_records))
@@ -1305,10 +1299,9 @@ class MainWindow(QtWidgets.QMainWindow):
             for rec, rec_name in self.all_records:
 
                 if rec.checkState(0) == 2:
-
                     self.record_text = "Processing Record {} of {}".format(
                         proc_count, self.n_records)
-#                    self.processing_console.addText("Processing Record {} of {}".format(proc_count, n_records))
+                    #                    self.processing_console.addText("Processing Record {} of {}".format(proc_count, n_records))
 
                     p_nan = self.process_file(rec_name, parallel=True)
                     self.record_text = "{0:.0f}% of frames had missing markers\n".format(
@@ -1318,11 +1311,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
         t1 = time.time()
 
-
-#
-#        self.processing_console.addText("Creating summary file")
+        #
+        #        self.processing_console.addText("Creating summary file")
         self.create_summary_file()
-#        self.processing_console.addText("Processing finished")
+        #        self.processing_console.addText("Processing finished")
         self.process_time = t1 - t0
         self.processing_live = False
 
@@ -1346,7 +1338,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.proc = backend.posturalProc(v_fname=os.path.join(
             rec_name, 'videos', 'testIR.h264'), calibration_dir=os.path.join(rec_name, 'calibration'), kind='client')
         self.proc2 = backend.posturalProc(v_fname=os.path.join(
-            rec_name, 'videos', 'testIR_server.h264'), calibration_dir=os.path.join(rec_name, 'calibration'), kind='client')
+            rec_name, 'videos', 'testIR_server.h264'), calibration_dir=os.path.join(rec_name, 'calibration'),
+            kind='client')
 
         if parallel:
             # Process the markers (in parallel)?
@@ -1354,9 +1347,9 @@ class MainWindow(QtWidgets.QMainWindow):
             server_queue = multiprocessing.Queue()
             print("Starting IR marker processes")
             p1 = multiprocessing.Process(target=self.proc.get_ir_markers, kwargs={
-                                         'out_queue': client_queue})
+                'out_queue': client_queue})
             p2 = multiprocessing.Process(target=self.proc2.get_ir_markers, kwargs={
-                                         'out_queue': server_queue})
+                'out_queue': server_queue})
 
             p1.start()
             p2.start()
@@ -1384,13 +1377,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Ensure the marker arrays are the same size. It may be that one of the cameras ran for a frame or two more
         # Similtaneously remove the first second of records
-        #min_n_markers = np.min([proc_all_markers.shape[0], proc2_all_markers.shape[0]])
+        # min_n_markers = np.min([proc_all_markers.shape[0], proc2_all_markers.shape[0]])
         # proc_all_markers = proc_all_markers[60:min_n_markers] #removes the first 60 frames (1 second recording)
         # proc2_all_markers = proc2_all_markers[60:min_n_markers] #removes the first 60 frames (1 second recording)
 
-#        #Save marker data in the records data directory
-#        np.save(open(os.path.join(rec_name, 'client_IRpoints.npy'), 'wb'), proc_all_markers)
-#        np.save(open(os.path.join(rec_name, 'server_IRpoints.npy'), 'wb'), proc2_all_markers)
+        #        #Save marker data in the records data directory
+        #        np.save(open(os.path.join(rec_name, 'client_IRpoints.npy'), 'wb'), proc_all_markers)
+        #        np.save(open(os.path.join(rec_name, 'server_IRpoints.npy'), 'wb'), proc2_all_markers)
 
         # Save the marker data as csv files
         cam_marker_headers = ['m{0}_x,m{0}_y'.format(
@@ -1403,7 +1396,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         np.savetxt(os.path.join(rec_name, 'client_IRpoints.csv'), proc_all_markers_reshape,
                    header=cam_marker_headers, delimiter=',', comments='', fmt='%1.4f')
-        np.savetxt(os.path.join(rec_name, 'server_IRpoints.csv'),  proc2_all_markers_reshape,
+        np.savetxt(os.path.join(rec_name, 'server_IRpoints.csv'), proc2_all_markers_reshape,
                    header=cam_marker_headers, delimiter=',', comments='', fmt='%1.4f')
 
         # Perform stereo triangulation
@@ -1413,9 +1406,11 @@ class MainWindow(QtWidgets.QMainWindow):
         except AttributeError:
             print("LOADING CAL DATA")
             self.proc = backend.posturalProc(v_fname=os.path.join(
-                rec_name, 'videos', 'testIR.h264'), calibration_dir=os.path.join(rec_name, 'calibration'), kind='client')
+                rec_name, 'videos', 'testIR.h264'), calibration_dir=os.path.join(rec_name, 'calibration'),
+                kind='client')
             self.proc2 = backend.posturalProc(v_fname=os.path.join(
-                rec_name, 'videos', 'testIR_server.h264'), calibration_dir=os.path.join(rec_name, 'calibration'), kind='client')
+                rec_name, 'videos', 'testIR_server.h264'), calibration_dir=os.path.join(rec_name, 'calibration'),
+                kind='client')
             stereo = backend.stereo_process(
                 self.proc, self.proc2, calibration_dir=os.path.join(rec_name, 'calibration'))
 
@@ -1424,12 +1419,12 @@ class MainWindow(QtWidgets.QMainWindow):
         # Kalman smooth marker positions (Filtering)
         markers3d_filt = stereo.kalman_smoother(markers3d)
 
-#        markers3d_filt = stereo.zero_order_butterworth(markers3d) #Test out butterworth filter
+        #        markers3d_filt = stereo.zero_order_butterworth(markers3d) #Test out butterworth filter
 
         # Calculate the mid point of the two markers
-        marker_mid_3d = np.sum(markers3d, axis=1)/2.0
+        marker_mid_3d = np.sum(markers3d, axis=1) / 2.0
         # Calculate the mid point of the two (filtered) markers
-        marker_mid_3d_filt = np.sum(markers3d_filt, axis=1)/2.0
+        marker_mid_3d_filt = np.sum(markers3d_filt, axis=1) / 2.0
         distance_between_leds_filt = np.sqrt(np.sum(np.square(np.diff(
             markers3d_filt, axis=1)), axis=2)).squeeze()  # Calculate the distance between the IR-LED's
         # The number of missing markers
@@ -1446,7 +1441,7 @@ class MainWindow(QtWidgets.QMainWindow):
         filt_reshape3d[np.isnan(filt_reshape3d)] = -999
 
         headers = ['m{0}_x,m{0}_y,m{0}_z'.format(
-            i) for i in range(int(reshape3d.shape[1]/3))]
+            i) for i in range(int(reshape3d.shape[1] / 3))]
         headers = ",".join(headers)
         # Save the triangulated 3D data to the records data directory
         np.savetxt(os.path.join(rec_name, '3d_unfiltered.csv'), reshape3d,
@@ -1483,7 +1478,6 @@ class MainWindow(QtWidgets.QMainWindow):
         for rec, rec_name in self.all_records:
 
             if rec.checkState(0) == 2:
-
                 summary = pd.read_csv(
                     os.path.join(rec_name, 'summary.csv'))
                 demographics = pd.read_csv(
@@ -1497,16 +1491,17 @@ class MainWindow(QtWidgets.QMainWindow):
         # Save a csv of the summarised data
         master_dataFrame.to_csv(os.path.join(
             self.storage_loc, 'recorded_data', 'master_data.csv'))
-#                print(summary)
-#                print(demographics)
 
-        ##---------------------------------------------##
-        ##---------------------------------------------##
-        ##----------Camera Feed Preview Functions------##
-        ##---------------------------------------------##
-        ##---------------------------------------------##
-        ##---------------------------------------------##
-        ##---------------------------------------------##
+    #                print(summary)
+    #                print(demographics)
+
+    ##---------------------------------------------##
+    ##---------------------------------------------##
+    ##----------Camera Feed Preview Functions------##
+    ##---------------------------------------------##
+    ##---------------------------------------------##
+    ##---------------------------------------------##
+    ##---------------------------------------------##
 
     def toggle_preview_server(self):
         """Toggle the server video preview on and off"""
@@ -1543,16 +1538,14 @@ class MainWindow(QtWidgets.QMainWindow):
         if ir1 != None:
 
             for mark in ir1:
-
-               #                 print(mark['pos'], mark['radius'])
+                #                 print(mark['pos'], mark['radius'])
                 cv2.circle(img1, (int(mark['pos'][0]), int(mark['pos'][1])), int(
                     mark['radius']), (255, 0, 0), 10)
 
         if ir2 != None:
 
             for mark in ir2:
-
-               #                 print(mark['pos'], mark['radius'])
+                #                 print(mark['pos'], mark['radius'])
                 cv2.circle(img2, (int(mark['pos'][0]), int(mark['pos'][1])), int(
                     mark['radius']), (255, 0, 0), 10)
 
@@ -1564,11 +1557,11 @@ class MainWindow(QtWidgets.QMainWindow):
             markers3d = self.stereo.triangulate_all_get_PL(
                 ir1, ir2).squeeze()  # Get the marker positions in 3d space
 
-            self.marker_mid = np.sum(markers3d, axis=0)/2.0
+            self.marker_mid = np.sum(markers3d, axis=0) / 2.0
 
             # Calculate the distance of the marker from the center of the two camereas. Calculate the vector between the midpoint along T and the observed point. Then take it's magnitude
             marker_distance = vector_magnitude(
-                self.marker_mid - (self.stereo.T.flatten()/2.0))
+                self.marker_mid - (self.stereo.T.flatten() / 2.0))
 
             self.z_ind.setValue(marker_distance)
             self.z_ind_label.setText(str(int(marker_distance)))
@@ -1595,7 +1588,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
             # Draw markers to screen and trinagulate
             if self.preview_options_triangulate.isChecked() and (f1 != None) and (f2 != None):
-
                 f1, f2 = self.preview_triangulate(f1, f2)
 
             if (f1 == 'DEAD') or (f2 == "DEAD"):
@@ -1604,7 +1596,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
             # Hand videos to rendering functions
             if f1 != None:
-
                 self.render_preview(f1, self.label1)
 
             if f2 != None:
@@ -1632,12 +1623,12 @@ class MainWindow(QtWidgets.QMainWindow):
         Qobj.setPixmap(QtGui.QPixmap.fromImage(image2))
 
     ##---------------------------------------------##
-        ##---------------------------------------------##
-        ##---------Camera Recording Functions----------##
-        ##---------------------------------------------##
-        ##---------------------------------------------##
-        ##---------------------------------------------##
-        ##---------------------------------------------##
+    ##---------------------------------------------##
+    ##---------Camera Recording Functions----------##
+    ##---------------------------------------------##
+    ##---------------------------------------------##
+    ##---------------------------------------------##
+    ##---------------------------------------------##
 
     def start_recording(self):
         """Will start the RPi Recording"""
@@ -1646,7 +1637,6 @@ class MainWindow(QtWidgets.QMainWindow):
         run = self.check_participant_not_run()
 
         if run:
-
             return
 
             # Check a storage location has been set
@@ -1669,13 +1659,13 @@ class MainWindow(QtWidgets.QMainWindow):
         t = self.Record_Time.value()
         print("RECORD NOW FOR {}".format(t))
 
-#        progress_thread = threading.Thread(target = self.progressBar_update, args = (t,))
-#        progress_thread.start()
+        #        progress_thread = threading.Thread(target = self.progressBar_update, args = (t,))
+        #        progress_thread.start()
         print("REQUEST RECORDING")
         self.backend_camera.TCP_client_start_UDP(
             t, 'testIR.h264')  # Starts the video recording
 
-        #Video is finished
+        # Video is finished
         self.post_recording_protocol_progressBar()  # Place files in correct place
 
     def post_recording_protocol(self, callback_function=None):
@@ -1750,9 +1740,8 @@ class MainWindow(QtWidgets.QMainWindow):
         old_text = self.transfer_prof_text
 
         while not self.data_transfer_complete:
-            #print(old_text, self.transfer_prof_text)
+            # print(old_text, self.transfer_prof_text)
             if self.transfer_prof_text != old_text:
-
                 print("running")
                 self.data_transfer.setLabelText(self.transfer_prof_text)
 
@@ -1777,7 +1766,6 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
         if self.PL_mid != None:
-
             self.feedback_gui(self.PL_mid)
 
         # Try to close the data transfer window later (may be faster?)
@@ -1824,20 +1812,23 @@ class MainWindow(QtWidgets.QMainWindow):
     def get_demographics(self):
         """Retrieve the demographics information"""
 
-#        self.Forename_edit.text()
-#        self.Surname_edit.text()
-#        self.ID_edit.text()
-#        self.DOB_edit.date()
+        #        self.Forename_edit.text()
+        #        self.Surname_edit.text()
+        #        self.ID_edit.text()
+        #        self.DOB_edit.date()
 
         demographics = {'forename': self.Forename_edit.text(), 'surname': self.Surname_edit.text(),
-                        'DOB': self.DOB_edit.text(), 'ID': self.ID_edit.text(), 'Gender': self.Gender_edit.currentText(), 'Experiment': 'ExpOne',
-                        'condition': self.ConditionStack.currentWidget().currentText(), 'RecTime':  self.Record_Time.value()}
+                        'DOB': self.DOB_edit.text(), 'ID': self.ID_edit.text(),
+                        'Gender': self.Gender_edit.currentText(), 'Experiment': 'ExpOne',
+                        'condition': self.ConditionStack.currentWidget().currentText(),
+                        'RecTime': self.Record_Time.value()}
 
         return demographics
-#        self.Gender_edit.setCurrentIndex(0)
-#
-#
-#        self.DOB_edit.Date)
+
+    #        self.Gender_edit.setCurrentIndex(0)
+    #
+    #
+    #        self.DOB_edit.Date)
 
     def archive_files(self):
         """Move the recorded files to the appropriate directory"""
@@ -1865,12 +1856,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.backend_camera.TCP_client_request_IRPoints()
 
     ##---------------------------------------------##
-        ##---------------------------------------------##
-        ##---------------Depreciated Functions---------##
-        ##---------------------------------------------##
-        ##---------------------------------------------##
-        ##---------------------------------------------##
-        ##---------------------------------------------##
+    ##---------------------------------------------##
+    ##---------------Depreciated Functions---------##
+    ##---------------------------------------------##
+    ##---------------------------------------------##
+    ##---------------------------------------------##
+    ##---------------------------------------------##
 
     def progressBar_update(self, t):
         """Depreciated"""
@@ -1926,10 +1917,10 @@ class MainWindow(QtWidgets.QMainWindow):
         # Progress bar
         progress = QtWidgets.QProgressBar(self)
 
-        box_grid.addWidget(Start,               0, 2, 1, 2)
-        box_grid.addWidget(Record_time_label,   0, 0, 1, 1)
-        box_grid.addWidget(Record_time,         0, 1, 1, 1)
-        box_grid.addWidget(progress,            1, 0, 1, 4)
+        box_grid.addWidget(Start, 0, 2, 1, 2)
+        box_grid.addWidget(Record_time_label, 0, 0, 1, 1)
+        box_grid.addWidget(Record_time, 0, 1, 1, 1)
+        box_grid.addWidget(progress, 1, 0, 1, 4)
 
         box_grid.setSpacing(1)
         self.recording_box.setLayout(box_grid)
@@ -1947,7 +1938,7 @@ if __name__ == '__main__':
         multiprocessing.set_start_method("spawn")
 
     app = QtWidgets.QApplication(sys.argv)
-#    app.autoSipEnabled()
+    #    app.autoSipEnabled()
     ex = MainWindow()  # Run the GUI
 
     # Set the style (colors etc of the GUI)

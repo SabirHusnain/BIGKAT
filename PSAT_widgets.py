@@ -4,16 +4,17 @@ Created on Fri Mar 10 09:42:47 2017
 
 """
 
-import matplotlib.pylab as plt
-import collections
 import calendar
-import time
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-import seaborn as sns
+import collections
 import os
-import scipy.stats as sts
-import numpy as np
 import sys
+import time
+
+import matplotlib.pylab as plt
+import numpy as np
+import scipy.stats as sts
+import seaborn as sns
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 if getattr(sys, 'frozen', False):
     base_path = sys._MEIPASS
@@ -22,12 +23,13 @@ else:
 
 try:
     from PySide import QtWidgets, QtCore
+
     Signal = QtCore.Signal
     Slot = QtCore.Slot
 
-#   from PyQt4 import QtCore, QtWidgets  #Note that some code will need to be changed if this is used (Signal has different call signiture)
-#   Signal = QtCore.pyqtSignal
-#   Slot = QtCore.pyqtSlot
+    #   from PyQt4 import QtCore, QtWidgets  #Note that some code will need to be changed if this is used (Signal has different call signiture)
+    #   Signal = QtCore.pyqtSignal
+    #   Slot = QtCore.pyqtSlot
 
     onDesktop = False
 
@@ -36,6 +38,7 @@ except ImportError as exp:
     print("Looking for PyQT")
 
     from PyQt5 import QtGui, QtCore, QtWidgets
+
     Signal = QtCore.pyqtSignal
     Slot = QtCore.pyqtSlot
 
@@ -53,7 +56,7 @@ class cameraSystemDialog(QtWidgets.QDialog):
         self.setWindowTitle("PSAT")
         self.setModal(True)  # Lock focus on this widget
 
-#        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        #        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
 
         self.masterLayout = QtWidgets.QVBoxLayout()
 
@@ -109,7 +112,6 @@ class cameraSystemDialog(QtWidgets.QDialog):
             t1 = time.time() - t0
 
             if t1 > 1.5:
-
                 self.close()
                 break
 
@@ -126,25 +128,21 @@ class myDateLineEdit(QtWidgets.QLineEdit):
     clicked = Signal()
 
     def __init__(self):
-
         super(myDateLineEdit, self).__init__()
         self.setReadOnly(True)
         self.setText("DD/MM/YYYY")
 
     def mousePressEvent(self, e):
-
         #        print("DOB Pressed")
         #        self.setStyleSheet("""background-color: rgb(255,105,); """)
         self.clicked.emit()
         super(myDateLineEdit, self).mousePressEvent(e)
 
     def mouseReleaseEvent(self, e):
-
         #        self.setStyleSheet("""background-color: rgb(52,50,52);""")
         super(myDateLineEdit, self).mouseReleaseEvent(e)
 
     def reset_date(self):
-
         self.setText("DD/MM/YYYY")
 
 
@@ -158,10 +156,10 @@ class myDateDialog(QtWidgets.QDialog):
         self.setObjectName("MyDateDialog")
         self.setWindowTitle("Select DOB")
 
-#        self.setGeometry(100, 100, 10, 10)
+        #        self.setGeometry(100, 100, 10, 10)
 
-#        self.setFixedSize(600, 360) #Do not allow the window to resize
-#        self.move(10,10)
+        #        self.setFixedSize(600, 360) #Do not allow the window to resize
+        #        self.move(10,10)
         self.setModal(True)  # Window will be locked in focus
 
         self.decade = 2000  # Decade the calendar will start on
@@ -208,13 +206,12 @@ class myDateDialog(QtWidgets.QDialog):
             sorted(self.months.items(), key=lambda t: t[1]))
 
         month_labels = [key for key in self.months]
-#        print(month_labels)
+        #        print(month_labels)
         self.buttons = []
 
         i = 0
         for row in range(3):
             for col in range(4):
-
                 button = QtWidgets.QPushButton(month_labels[i])
                 button.clicked.connect(self.setMonth)
 
@@ -231,7 +228,7 @@ class myDateDialog(QtWidgets.QDialog):
 
         self.month_value = self.months[sender.text()]
 
-#        print(sender.text(), self.months[sender.text()])
+        #        print(sender.text(), self.months[sender.text()])
 
         self.monthView.hide()
         self.yearView.show()
@@ -253,7 +250,6 @@ class myDateDialog(QtWidgets.QDialog):
         i = 0
         for row in range(2):
             for col in range(5):
-
                 button = QtWidgets.QPushButton(str(display_years[i]))
                 button.clicked.connect(self.setYear)
                 self.yearButtons.append(button)
@@ -283,7 +279,7 @@ class myDateDialog(QtWidgets.QDialog):
 
         sender = self.sender().objectName()
 
-#        print(sender)
+        #        print(sender)
 
         if sender == 'next_decade':
 
@@ -303,7 +299,6 @@ class myDateDialog(QtWidgets.QDialog):
         i = 0
         for row in range(2):
             for col in range(5):
-
                 self.yearButtons[i].setText(str(display_years[i]))
                 i += 1
 
@@ -376,6 +371,8 @@ class myDateDialog(QtWidgets.QDialog):
 
         self.setGeometry(geom)
         super(myDateDialog, self).showEvent(event)
+
+
 #        print("SHOWING")
 
 
@@ -420,10 +417,10 @@ class recordingLocLabel(QtWidgets.QLabel):
         qp.setPen(pen)
         qp.setBrush(QtGui.QColor(52, 50, 52))
         qp.drawRect(0, 0, w, h)
-#        qp.drawText()
+        #        qp.drawText()
         pen = QtGui.QPen(QtGui.QColor(255, 255, 255), 1)
         qp.setPen(pen)
-        qp.drawText(int(w - self.textPosOffset), h-5, self.message)
+        qp.drawText(int(w - self.textPosOffset), h - 5, self.message)
 
     def scrollText(self):
 
@@ -450,7 +447,6 @@ class positionLabel(QtWidgets.QLabel):
     """Label for the distance from the center of the cameras"""
 
     def __init__(self, text):
-
         super(positionLabel, self).__init__(text)
 
         sizePolicy = QtWidgets.QSizePolicy(
@@ -459,11 +455,9 @@ class positionLabel(QtWidgets.QLabel):
         self.setSizePolicy(sizePolicy)
 
     def sizeHint(self):
-
         return QtCore.QSize(100, 100)
 
     def heightForWidth(self, width):
-
         return width
 
 
@@ -516,11 +510,10 @@ class positionWidget(QtWidgets.QWidget):
         qp.setBrush(QtGui.QColor(52, 50, 52))
         qp.drawRect(0, 0, w, h)
 
-
-#        pen = QtGui.QPen(QtGui.QColor(255,255,255), 10)
-#        qp.setPen(pen)
-#        qp.setBrush(QtGui.QColor(255,255,255))
-#        qp.drawRect(self.transform_pos(self.idealPos - self.error, self.minPos, step), 0, self.error * 2 * step, h)
+        #        pen = QtGui.QPen(QtGui.QColor(255,255,255), 10)
+        #        qp.setPen(pen)
+        #        qp.setBrush(QtGui.QColor(255,255,255))
+        #        qp.drawRect(self.transform_pos(self.idealPos - self.error, self.minPos, step), 0, self.error * 2 * step, h)
 
         # Draw the line
         if (self.idealPos - self.error) < self.value < (self.idealPos + self.error):
@@ -539,7 +532,6 @@ class positionWidget(QtWidgets.QWidget):
     def setValue(self, value):
         """If the value has changed repaint the widget"""
         if value != self.value:
-
             self.value = value
             self.repaint()
 
@@ -575,7 +567,7 @@ class virtualKeyboard(QtWidgets.QDialog):
 
         self.alt_key_labels = [['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
                                ['@', '£', '&', '_',
-                                   '(', ')', ':', ';', '"', ''],
+                                '(', ')', ':', ';', '"', ''],
                                ['', '!', '#', '=', '*', '/', '+', '-', '*', ''],
                                ['CAP', ',', '.', '', '', '', '', '', '<-', ''],
                                ['', 'Spacebar', '']]
@@ -599,7 +591,7 @@ class virtualKeyboard(QtWidgets.QDialog):
                          {'lower': 'e', 'upper': 'E', 'alt': '&', 'type': 'text'},
                          {'lower': 'r', 'upper': 'R', 'alt': '_', 'type': 'text'},
                          {'lower': 't', 'upper': 'T',
-                             'alt': '(', 'type': 'text'},
+                          'alt': '(', 'type': 'text'},
                          {'lower': 'y', 'upper': 'Y', 'alt': ')', 'type': 'text'},
                          {'lower': 'u', 'upper': 'U', 'alt': ':', 'type': 'text'},
                          {'lower': 'i', 'upper': 'I', 'alt': ';', 'type': 'text'},
@@ -652,7 +644,7 @@ class virtualKeyboard(QtWidgets.QDialog):
         self.button_case = 'upper'  # Start the buttons in lower case. Used to toggle the case
         self.alt_keys = False  # Start not on alt keys
 
-#        self.key_buttons = [[Text_Button(k) for k in row] for row in self.lower_key_labels] #Create all the buttons
+        #        self.key_buttons = [[Text_Button(k) for k in row] for row in self.lower_key_labels] #Create all the buttons
 
         for row in self.buttons:
             for k in row:
@@ -701,13 +693,11 @@ class virtualKeyboard(QtWidgets.QDialog):
 
         self.setLayout(master_grid)
 
-#        self.set_case('lower')
+    #        self.set_case('lower')
 
-#        self.setStyleSheet("background-color: rgba(0, 0, 0, 100%);")
+    #        self.setStyleSheet("background-color: rgba(0, 0, 0, 100%);")
 
-
-#        self.hide() #Make the keyboard invisible
-
+    #        self.hide() #Make the keyboard invisible
 
     def connect_to_buttons(self, obj):
         """connect all the buttons to a suitable Qt object"""
@@ -770,7 +760,6 @@ class virtualKeyboard(QtWidgets.QDialog):
             for row in self.buttons:
                 for k in row:
                     if k['type'] == 'text':
-
                         k['button'].change_text(k['lower'])
 
     @Slot(int)
@@ -824,7 +813,6 @@ class Icon_Button(QtWidgets.QToolButton):
         return size
 
     def mousePressEvent(self, e):
-
         self.pressed.emit()
 
         self.setStyleSheet("""background-color: rgb(255, 105, 0); 
@@ -832,7 +820,6 @@ class Icon_Button(QtWidgets.QToolButton):
                             color: rgb(255,255,255);""")
 
     def mouseReleaseEvent(self, e):
-
         if self.text != '':
             self.setStyleSheet("""background-color: rgb(52,50,52); color: rgb(255,255,255); border: 1px solid rgb(34, 85, 96); 
                                      border-radius: 0px; font-family: embrima; font-size: 17px; font-weight: 700 """)
@@ -863,7 +850,6 @@ class Text_Button(QtWidgets.QToolButton):
     def mousePressEvent(self, e):
 
         if self.text != '':
-
             self.pressed.emit(self.text)
             print("Key: {}".format(self.text))
 
@@ -939,7 +925,6 @@ class MyTimeLineEdit(QtWidgets.QLineEdit):
             else:
 
                 if self.test_int(inp):
-
                     self.text2 += inp
 
             self.setText(self.text2)
@@ -1113,13 +1098,12 @@ class MyDateEdit(QtWidgets.QDateEdit):
 
         self.setDate(QtCore.QDate(2000, 1, 1))
 
-#    def mousePressEvent(self, e):
-#
-#        self.pressed.emit() #Emit a signal when the key is pressed
-#        print("Key Pressed")
+    #    def mousePressEvent(self, e):
+    #
+    #        self.pressed.emit() #Emit a signal when the key is pressed
+    #        print("Key Pressed")
 
     def focusInEvent(self, e):
-
         QtWidgets.QDateEdit.focusInEvent(self, QtGui.QFocusEvent(
             QtCore.QEvent.FocusIn))  # Call the default In focus event
 
@@ -1128,7 +1112,6 @@ class MyDateEdit(QtWidgets.QDateEdit):
         print("IN")
 
     def focusOutEvent(self, e):
-
         QtWidgets.QDateEdit.focusOutEvent(self, QtGui.QFocusEvent(
             QtCore.QEvent.FocusOut))  # Call the default Outfocus event
 
@@ -1138,15 +1121,12 @@ class MyDateEdit(QtWidgets.QDateEdit):
 
     @Slot(str)
     def recieve_input(self, inp):
-
         if self.in_focus:
-
             self.text = self.sectionText(self.currentSection())
             print(self.text, self.currentSection())
             print(self.date())
 
     def reset_date(self):
-
         self.setDate(QtCore.QDate(2000, 1, 1))
 
 
@@ -1215,7 +1195,6 @@ class QLED(QtWidgets.QWidget):
 class feedbackDialog(QtWidgets.QDialog):
 
     def __init__(self, parent=None, PL=-999):
-
         super(feedbackDialog, self).__init__(parent)
         self.setWindowTitle("Results")
 
@@ -1226,7 +1205,6 @@ class feedbackDialog(QtWidgets.QDialog):
         self.init_layout()
 
     def init_layout(self):
-
         self.myLayout = QtWidgets.QVBoxLayout()
         self.add_PL_label()  # Add the label
         self.add_percentile_label()
@@ -1244,23 +1222,20 @@ class feedbackDialog(QtWidgets.QDialog):
         self.PL_percent = sts.norm.cdf(self.PL, self.mean, self.std)
 
     def add_PL_label(self):
-
         PL_label = QtWidgets.QLabel("Path Length = {:.0f}mm".format(self.PL))
         PL_label.setAlignment(QtCore.Qt.AlignCenter)
         self.myLayout.addWidget(PL_label)
 
     def add_percentile_label(self):
-
         pc_label = QtWidgets.QLabel(
-            "Percentile = {0:.0f}%".format(self.PL_percent*100))
+            "Percentile = {0:.0f}%".format(self.PL_percent * 100))
         pc_label.setAlignment(QtCore.Qt.AlignCenter)
 
         self.myLayout.addWidget(pc_label)
 
     def add_figure(self):
-
         fig = plt.figure(figsize=(2.5, 1.75), facecolor=(
-            52/255, 50/255, 52/255), edgecolor='white')
+            52 / 255, 50 / 255, 52 / 255), edgecolor='white')
         ax1 = fig.add_subplot(111, axisbg='none')
         ax1.get_xaxis().set_visible(False)
         ax1.get_yaxis().set_visible(False)
@@ -1268,9 +1243,9 @@ class feedbackDialog(QtWidgets.QDialog):
         x = np.linspace(-5, 5, 1000)
         y = sts.norm.pdf(x, 0, 1)
 
-        ax1.plot(x, y, color=(16/255, 159/255, 221/255))
+        ax1.plot(x, y, color=(16 / 255, 159 / 255, 221 / 255))
         ax1.axvline((self.PL - self.mean) / self.std,
-                    color=(221/255, 89/255, 2/255))
+                    color=(221 / 255, 89 / 255, 2 / 255))
 
         plt.tight_layout()
 
@@ -1279,7 +1254,6 @@ class feedbackDialog(QtWidgets.QDialog):
         self.myLayout.addWidget(self.canvas)
 
     def add_closeButton(self):
-
         self.closeButton = QtWidgets.QPushButton("Ok", parent=self)
         self.closeButton.clicked.connect(self.close)
 

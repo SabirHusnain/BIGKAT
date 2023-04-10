@@ -3,15 +3,16 @@
 @author: Awais
 """
 
-import cv2
-import matplotlib.pylab
-import numpy as np
 import multiprocessing
-import matplotlib.pylab as plt
-import pdb
 import os
+import pdb
 from itertools import permutations
 from pprint import pprint
+
+import cv2
+import matplotlib.pylab
+import matplotlib.pylab as plt
+import numpy as np
 
 
 def get_ir_marker_process(jobs, results):
@@ -24,7 +25,6 @@ def get_ir_marker_process(jobs, results):
         if isinstance(in_job, str):
 
             if in_job == "KILL":
-
                 break
 
         else:
@@ -66,7 +66,7 @@ def find_ir_markers(frame, n_markers=3, it=0, tval=150, last_markers=None, last_
     tval = 150  # Lower threshold for thresholding brightness
 
     if last_markers == None:
-        #Initial guess
+        # Initial guess
         ir = find_ir_markers_nofilt(
             frame, it=it, tval=tval, gamma=None, plot_ax=None)
 
@@ -91,15 +91,15 @@ def find_ir_markers(frame, n_markers=3, it=0, tval=150, last_markers=None, last_
             ir = None
 
         else:
-            #Now reduce the frame size
+            # Now reduce the frame size
             frame_new = np.copy(frame)
             frame_new = frame_new[y_min_floor:y_max_floor,
-                                  x_min_floor: x_max_floor]
+                        x_min_floor: x_max_floor]
 
             ir = find_ir_markers_nofilt(
                 frame_new, it=it, tval=tval, gamma=None, plot_ax=None)
 
-        #If no markers found run it again with the whole image
+        # If no markers found run it again with the whole image
         if ir == None:
 
             ir = find_ir_markers_nofilt(
@@ -108,10 +108,9 @@ def find_ir_markers(frame, n_markers=3, it=0, tval=150, last_markers=None, last_
         else:
 
             for marker in ir:
-
                 marker['pos'] = (marker['pos'][0] + x_min_floor,
                                  marker['pos'][1] + y_min_floor)
-#                marker['center'] = (int(marker['pos'][0] + x_min_floor), int(marker['pos'][1] + x_max_floor))
+    #                marker['center'] = (int(marker['pos'][0] + x_min_floor), int(marker['pos'][1] + x_max_floor))
 
     #####IF NO MARKER FOUND DO SOMETHING HERE
     if ir == None:
@@ -132,7 +131,7 @@ def find_ir_markers(frame, n_markers=3, it=0, tval=150, last_markers=None, last_
         # Check radius of all markers is greater than or equal marker min
         rads_min = [min_area <= mark['radius'] for mark in ir]
 
-        #If marker area is too big it likely indicates either glare or external IR sources
+        # If marker area is too big it likely indicates either glare or external IR sources
         if False in rads_max:
             print("Marker glare. Trying again")
 
@@ -152,17 +151,16 @@ def find_ir_markers(frame, n_markers=3, it=0, tval=150, last_markers=None, last_
             # Check radius of all markers is greater than or equal marker min
             rads_min = [min_area <= mark['radius'] for mark in ir]
 
-
-#    if (it == 357):
-#        f, ax = plt.subplots(1,1)
-#        ax.imshow(frame[:,:,::-1])
-#        plt.suptitle("Frame: {}".format(it))
-#        for mark in ir:
-#
-#            circle1 = plt.Circle(mark['pos'], mark['radius'] , color='b', fill = False, linewidth = 2)
-#            ax.add_artist(circle1)
-#        plt.show()
-#        pdb.set_trace()
+    #    if (it == 357):
+    #        f, ax = plt.subplots(1,1)
+    #        ax.imshow(frame[:,:,::-1])
+    #        plt.suptitle("Frame: {}".format(it))
+    #        for mark in ir:
+    #
+    #            circle1 = plt.Circle(mark['pos'], mark['radius'] , color='b', fill = False, linewidth = 2)
+    #            ax.add_artist(circle1)
+    #        plt.show()
+    #        pdb.set_trace()
     ##Now filter the markers
 
     if ir != None:
@@ -174,8 +172,8 @@ def find_ir_markers(frame, n_markers=3, it=0, tval=150, last_markers=None, last_
             compactness_error = np.array(
                 [np.abs(mark['compactness'] - 1) for mark in ir])
 
-#            print([i['radius'] for i in ir])
-            #IF there are more than n_markers only get the largest radius markers
+            #            print([i['radius'] for i in ir])
+            # IF there are more than n_markers only get the largest radius markers
             if len(ir) > n_markers:
                 ir = ir[compactness_error < 1]  # Remove non circular objects
 
@@ -186,9 +184,9 @@ def find_ir_markers(frame, n_markers=3, it=0, tval=150, last_markers=None, last_
 
                 if len(ir) < n_markers:
                     ir = None
-#                if type(ir).__module__ != np.__name__:
-#                    pdb.set_trace()
-#                ir = ir.aslist()
+            #                if type(ir).__module__ != np.__name__:
+            #                    pdb.set_trace()
+            #                ir = ir.aslist()
             elif len(ir) < n_markers:
                 ir = None
 
@@ -208,18 +206,17 @@ def find_ir_markers(frame, n_markers=3, it=0, tval=150, last_markers=None, last_
     if plot:
         try:
             if ir != None:
-                condTrue=True
+                condTrue = True
             else:
-                condTrue=False
+                condTrue = False
         except:
             if any(ir != None):
-                condTrue=True
+                condTrue = True
             else:
-                condTrue=False
+                condTrue = False
 
         if condTrue:
             for mark in ir:
-
                 circle1 = plt.Circle(
                     mark['pos'], mark['radius'], color='b', fill=False, linewidth=2)
                 ax.add_artist(circle1)
@@ -238,17 +235,16 @@ def find_ir_markers(frame, n_markers=3, it=0, tval=150, last_markers=None, last_
                 ".\\markers\\not_found\\{}\\frame_{}.png".format(plot_loc, it))
         plt.close()
 
-#    out = order_ir_markers(ir)
+    #    out = order_ir_markers(ir)
 
     # Order the markers and return
     return order_ir_markers(ir, last_visible_markers)
 
 
 def gamma_correction(img, correction=10):
-
-    img = img/255.0
+    img = img / 255.0
     img = cv2.pow(img, correction)
-    return np.uint8(img*255)
+    return np.uint8(img * 255)
 
 
 def find_ir_markers_nofilt(frame, n_markers=3, it=0, tval=150, gamma=None, plot_ax=None):
@@ -276,15 +272,14 @@ def find_ir_markers_nofilt(frame, n_markers=3, it=0, tval=150, gamma=None, plot_
         if plot_ax != None:
             plot_ax[2].imshow(gray, cmap="gray")
 
-
-#            plt.show()
+    #            plt.show()
 
     t_val = tval  # Threshold value
     t, thresh = cv2.threshold(gray, t_val, 255, cv2.THRESH_BINARY)
 
     thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, None)
-#        thresh = cv2.erode(thresh, None, iterations = 2) #Are these necessary? Erode and dilate
-#        thresh = cv2.dilate(thresh, None, iterations = 2)
+    #        thresh = cv2.erode(thresh, None, iterations = 2) #Are these necessary? Erode and dilate
+    #        thresh = cv2.dilate(thresh, None, iterations = 2)
 
     if plot_ax != None:
         plot_ax[3].imshow(gray, cmap="gray")
@@ -314,7 +309,7 @@ def find_ir_markers_nofilt(frame, n_markers=3, it=0, tval=150, gamma=None, plot_
 
             compactness = np.square(cv2.arcLength(
                 c, True)) / (4 * np.pi * cv2.contourArea(c))
-#            print("Compactness: {}".format(compactness))
+            #            print("Compactness: {}".format(compactness))
             dat = {'pos': (x, y), 'radius': radius,
                    'center': center, 'compactness': compactness}
             out.append(dat)
@@ -323,15 +318,15 @@ def find_ir_markers_nofilt(frame, n_markers=3, it=0, tval=150, gamma=None, plot_
 
 
 def cart2pol(x, y):
-    rho = np.sqrt(x**2 + y**2)
+    rho = np.sqrt(x ** 2 + y ** 2)
     phi = np.arctan2(y, x)
-    return(rho, phi)
+    return (rho, phi)
 
 
 def pol2cart(rho, phi):
     x = rho * np.cos(phi)
     y = rho * np.sin(phi)
-    return(x, y)
+    return (x, y)
 
 
 def order_ir_markers(markers, last_visible_markers, offset_angle=0):
@@ -386,6 +381,8 @@ def order_ir_markers(markers, last_visible_markers, offset_angle=0):
                 min_dist = dist_sum
                 min_dist_perm = marker_perm
         return min_dist_perm
+
+
 ##
 ##        markers = sorted(markers, key=lambda m: m["pos"][axis])
 ##    else:
@@ -410,14 +407,12 @@ def markers2numpy(all_markers, n_markers=3):
         else:
 
             for j in range(len(markers[i])):
-
                 markers[i, j] = all_markers[i][j]['pos']
 
     return markers
 
 
 if __name__ == '__main__':
-
     jobs = multiprocessing.Queue(5)
     results = multiprocessing.Queue()  # Queue to place the results into
     # Debug queue to see why not being killed

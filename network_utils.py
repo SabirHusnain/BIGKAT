@@ -12,6 +12,7 @@ def send_msg(sock, msg):
     msg = struct.pack('>L', len(msg)) + msg
     sock.sendall(msg)
 
+
 def recv_msg(sock):
     # Read message length and unpack it into an integer
     raw_msglen = recvall(sock, 4)
@@ -20,6 +21,7 @@ def recv_msg(sock):
     msglen = struct.unpack('>I', raw_msglen)[0]
     # Read the message data
     return recvall(sock, msglen)
+
 
 def recvall(sock, n):
     # Helper function to recv n bytes or return None if EOF is hit
@@ -30,5 +32,3 @@ def recvall(sock, n):
             return None
         data += packet
     return data
-    
-    
