@@ -1,0 +1,11 @@
+Exception in thread Thread-1 (start_camera_backend_connection):
+Traceback (most recent call last):
+  File "C:\Users\sabir\AppData\Local\Programs\Python\Python310\lib\threading.py", line 1016, in _bootstrap_inner
+    self.run()
+  File "C:\Users\sabir\AppData\Local\Programs\Python\Python310\lib\threading.py", line 953, in run
+    self._target(*self._args, **self._kwargs)
+  File "F:\BS Mechatronics\FYP_OMCS\My Code\PSAT\PSAT.py", line 262, in start_camera_backend_connection
+    self.camera_backend_live = self.backend_camera.TCP_client_start()
+  File "F:\BS Mechatronics\FYP_OMCS\My Code\PSAT\posturalCam_master_NETWORK.py", line 640, in TCP_client_start
+    self.TCP_client_socket.connect((host, port))
+OSError: [WinError 10065] A socket operation was attempted to an unreachable host
