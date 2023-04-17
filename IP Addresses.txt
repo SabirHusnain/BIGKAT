@@ -1,3 +1,3 @@
-master=192.138.137.192
-slaveLeft=192.168.137.164
-slaveRight=192.168.137.239
+master=192.138.137.100
+slaveLeft=192.168.137.102
+slaveRight=192.168.137.101
